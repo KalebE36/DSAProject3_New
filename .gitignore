@@ -1,0 +1,11 @@
+# OS Files
+.DS_store
+.idea
+
+# CLion Folders/Files
+cmake-build-debug/
+CMakeLists.txt
+
+# CSV FILES 
+db/
+
