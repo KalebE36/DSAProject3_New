@@ -1,75 +1,50 @@
-#include "DataParser.h"
+#include <iostream>
+#include <fstream>
 #include <sstream>
+#include <vector>
+#include <string>
+#include <unordered_map>
+#include "DataParser.h"
 
-void DataParser::readAllFile() {
-
-}
-
-void DataParser::readFoodItems() {
-    curr_file.open("../db/food.csv");
-    if(!curr_file.is_open()) {
-        std::cout << "Error opening food.csv" << std::endl;
-        exit;
-    }
-
+std::unordered_map<int, NutrientData> read_food_nutrients(const std::string& filename) {
+    std::unordered_map<int, NutrientData> nutrients;
+    std::ifstream file(filename);
     std::string line;
-    int count = 0;
-    while(getline(curr_file, line)) {
-        std::stringstream ss(line);
-        std::string id, data_type, name, food_cat_id, publ_date, market, trade, mic_dat;
-        getline(ss, id, ','); getline(ss, data_type, ','); getline(ss, name, ','); getline(ss, food_cat_id, ','); getline(ss, publ_date, ',');
-        getline(ss, market, ','); getline(ss, trade, ','); getline(ss, mic_dat, ',');
 
-        id.erase(remove(id.begin(), id.end(), '"'), id.end());
-        name.erase(remove(name.begin(), name.end(), '"'), name.end());
-
-
-        if(count > 0) {
-            FoodItem item(stoi(id), name);
-            std::cout << "Name of Food Item: " << item.getName() << ", Food Item ID: " << item.getID() << std::endl;
-
-        }
-        ++count;
-    }
-    curr_file.close();
-}
-
-
-void DataParser::readNutrient() {
-    curr_file.open("../db/nutrient.csv");
-    if(!curr_file.is_open()) {
-        std::cout << "Error opening file" << std::endl;
-        exit;
+    if (!file.is_open()) {
+        std::cerr << "Error: Unable to open file " << filename << std::endl;
+        return nutrients;
     }
 
-    std::string line;
-    while(getline(curr_file, line)) {
+    // Read and discard the header row
+    std::getline(file, line);
+
+    while (std::getline(file, line)) {
         std::stringstream ss(line);
-        std::string id, name, unit_name, nutrient_nbr_str, rank_str;
-        getline(ss, id, ',');
-        getline(ss, name, ',');
-        getline(ss, unit_name, ',');
-        getline(ss, nutrient_nbr_str, ',');
-        getline(ss, rank_str, ',');
+        std::string cell;
+        std::vector<std::string> tokens;
 
-        name.erase(remove(id.begin(), id.end(), '"'), id.end());
-        id.erase(remove(id.begin(), id.end(), '"'), id.end());
-
-        int id_num;
-        try {
-            id_num = stoi(id);
-            nutrients[name] = id_num;
-        } catch (...) {
-            std::cout << "Error converting id to integer: " << id << std::endl;
-            continue; // Skip this row if id cannot be converted to integer
+        while (std::getline(ss, cell, ',')) {
+            tokens.push_back(cell);
         }
 
+        if (tokens.size() >= 4) {
+            try {
+                int fdc_id = std::stoi(tokens[0]);
+                float amount_1003 = tokens[1].empty() ? 0.0f : std::stof(tokens[1]);
+                float amount_1004 = tokens[2].empty() ? 0.0f : std::stof(tokens[2]);
+                float amount_1005 = tokens[3].empty() ? 0.0f : std::stof(tokens[3]);
+                nutrients[fdc_id] = { amount_1003, amount_1004, amount_1005 };
+            }
+            catch (const std::invalid_argument& e) {
+                std::cerr << "Error: Invalid argument in line \"" << line << "\": " << e.what() << std::endl;
+            }
+            catch (const std::out_of_range& e) {
+                std::cerr << "Error: Out of range in line \"" << line << "\": " << e.what() << std::endl;
+            }
+        }
     }
-    curr_file.close();
-}
 
-void DataParser::printNutrients() {
-    for(auto& element : nutrients) {
-        std::cout << "Name: " <<element.first << ", ID: " << element.second << std::endl;
-    }
+    file.close();
+    return nutrients;
 }
