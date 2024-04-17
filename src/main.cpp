@@ -3,5 +3,5 @@
 
 int main () {
     DataParser parser;
-    parser.readFoodItems();
+    parser.read_food_nutrients();
 }

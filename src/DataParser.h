@@ -6,12 +6,20 @@
 #include "FoodItemData.h"
 
 /* This is a very general idea of a data parser that we could use for csv files */
-struct NutrientData {
-    float amount_1003;
-    float amount_1004;
-    float amount_1005;
-};
 
+
+class DataParser {
+private:
+    std::unordered_map<int, FoodItem> nutrients;
+    std::fstream curr_file;
+
+public:
+    void readAllFile();
+    void readNutrient();
+    void read_food_nutrients();
+    void readFoodItems();
+    void printNutrients();
+};
 
 
 #endif //DSAPROJECT3_NEW_DATAPARSER_H
