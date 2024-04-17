@@ -1,5 +1,8 @@
-#pragma once 
+#ifndef REDBLACKTREE_H
+#define REDBLACKTREE_H
 #include <iostream>
+#include <queue>
+using namespace std;
 
 //	Properties of a Red-Black Tree
 //	A Red - Black Tree is a self - balancing binary search tree with the following properties :
@@ -46,495 +49,571 @@
 //        Test our tree with various inputs to ensure it self-balances as expected.
 
 
-
+// Red-Black Tree implementation
 template <typename Key, typename Value>
 class RedBlackTree {
 public:
-    struct Node {
-        Key key;
-        Value value;
-        Node* left = nullptr;
-        Node* right = nullptr;
-        Node* parent = nullptr;
-        bool isRed = true; // New nodes are red by default
+    static const bool RED = true;     // Constant representing red color
+    static const bool BLACK = false;  // Constant representing black color
 
+    // Node structure representing elements in the tree
+    struct Node {
+        Key key;                      // Key of the node
+        Value value;                  // Value associated with the key
+        Node* left = nullptr;         // Pointer to the left child node
+        Node* right = nullptr;        // Pointer to the right child node
+        Node* parent = nullptr;       // Pointer to the parent node
+        bool isRed = RED;             // Color of the node, true for red and false for black
+
+        // Constructor initializing key and value
         Node(Key k, Value v) : key(k), value(v) {}
     };
+    Node* root;                       // Pointer to the root node of the tree
 
-
-    // Helper Function Declarations as public
-    void rotateLeft(Node* x);
-    void rotateRight(Node* x);
-    void insertFixUp(Node* node);
-    void deleteFixUp(Node* node);
-    Node* minimum(Node* node) const;
-    Node* maximum(Node* node) const;
-    Node* search(const Key& key) const;
-
-
-    // Default Constructor 
+    // Constructor
     RedBlackTree() : root(nullptr) {}
 
-
     // Copy constructor
-    // This is the declaration and implementation of the copy constructor. 
-    // It initializes a new instance of a RedBlackTree by copying the content from another tree (other).
-    // The constructor calls copySubtree, a recursive helper function, starting with the root of the tree to be copied.
     RedBlackTree(const RedBlackTree& other) {
         root = copySubtree(other.root);
     }
 
-
-    // Copy Assignment Operator 
+    // Assignment operator
     RedBlackTree& operator=(const RedBlackTree& other) {
-        if (this != &other) {               // Self-assignment check
-            clear(root);                    // Clear the current tree
-            root = copySubtree(other.root); // Copy the other tree
+        if (this != &other) {
+            clear(root);
+            root = copySubtree(other.root);
         }
-        return *this;                       // Return a reference to this instance
+        return *this;
     }
-
 
     // Destructor
     ~RedBlackTree() {
-        clear(root); // Clear the entire tree
-        root = nullptr; // Just to be safe, set root to nullptr
+        clear(root);
     }
 
-
-    // Function to insert a key-value pair
-    void insert(const Key& key, const Value& value) {
-
-        // TODO: Implement insertion logic
-    
-    }
-
-    // TO DO: This is very complex, and we need to fully understand the specific algorithms to maintain the Red-Black Tree properties.
-    // This function's definition must be handled carefully
-            // Need this header and function signature if we decide that this needs to be moved outside the class
-            //  template <typename Key, typename Value>         
-            //  bool RedBlackTree<Key, Value>::remove(const Key& key) {
-    bool remove(const Key& key) {
-        Node* nodeToDelete = searchNode(key); // finds the node with the given key
-        if (!nodeToDelete) return false; // Key not found
-
-        Node* y = nodeToDelete;
-        Node* x = nullptr;
-        bool originalColor = y->isRed;
-
-        if (nodeToDelete->left == nullptr) {
-            x = nodeToDelete->right;
-            transplant(nodeToDelete, nodeToDelete->right);
-        }
-        else if (nodeToDelete->right == nullptr) {
-            x = nodeToDelete->left;
-            transplant(nodeToDelete, nodeToDelete->left);
-        }
-        else {
-            y = minimum(nodeToDelete->right); // Find the minimum in the right subtree
-            originalColor = y->isRed;
-            x = y->right;
-
-            if (y->parent == nodeToDelete) {
-                if (x) x->parent = y;
-            }
-            else {
-                transplant(y, y->right);
-                y->right = nodeToDelete->right;
-                y->right->parent = y;
-            }
-
-            transplant(nodeToDelete, y);
-            y->left = nodeToDelete->left;
-            y->left->parent = y;
-            y->isRed = nodeToDelete->isRed;
-        }
-
-        delete nodeToDelete; // Free the memory of the deleted node
-
-        if (!originalColor) {
-            deleteFixUp(x);
-        }
-
-        return true;
-    }
-
-    // Function to search for a value by key
-    Value* search(const Key& key) const {
-
-        // TODO: Implement search logic
-    
-    }
-
-    // Public traversal functions
-    void inOrderTraversal() const {
-        inOrderHelper(root);
-    }
-
-    void preOrderTraversal() const {
-        preOrderHelper(root);
-    }
-
-    void postOrderTraversal() const {
-        postOrderHelper(root);
-    }
-
-    void levelOrderTraversal() const {
-        levelOrderHelper(root);
-    }
-
+    void insert(const Key& key, const Value& value);        // Method to insert a key-value pair into the tree
+    bool remove(const Key& key);                            // Method to remove a key from the tree
+    Value* search(const Key& key) const;                    // Method to search for a key in the tree and return its value
+    Node* searchNode(const Key& key) const;                 // Method to search for a node with a given key in the tree
+    void inOrderTraversal() const;                          // Traversal methods
+    void preOrderTraversal() const;
+    void postOrderTraversal() const;
+    void levelOrderTraversal() const;
+    vector<Value> getAllValues() const;                     // Method to retrieve all values from the tree in sorted order
 
 
 private:
-    Node* root = nullptr;
-
-
-
-    // TO DO: IMPROVE / DEVELOP 
-    // Note: this is a simplified example and doesn't cover all complexities involved in accurately copying every aspect of a Red-Black Tree.   
-    // Recursive helper function for the copy constructor to create a deep copy of each subtree rooted at node.
-    Node* copySubtree(Node* node) {
-        if (node == nullptr) return nullptr;
-        Node* newNode = new Node(node->key, node->value); // Create a new node with the same key and value
-        newNode->isRed = node->isRed; // Copy the color of the node
-        newNode->left = copySubtree(node->left); // Recursively copy the left subtree
-        newNode->right = copySubtree(node->right); // Recursively copy the right subtree
-
-        // Set the parent of the newly created left and right nodes
-        if (newNode->left != nullptr) newNode->left->parent = newNode;
-        if (newNode->right != nullptr) newNode->right->parent = newNode;
-
-        return newNode; // Return the new subtree's root node
-    }
-    /*
-    Base Case: If node is nullptr (indicating a leaf or the end of a branch), it returns nullptr,
-    ensuring that the new tree accurately represents the structure of the original, including its leaves.
-
-    Node Duplication: For each non-null node, it creates a new node with the same key, value, and color.
-
-    Recursive Copy: It recursively copies the left and right children of the current node,
-    ensuring that the entire structure of the subtree is duplicated.
-
-    Parent Linking: After copying the children, it sets their parent pointers to the newly created node,
-    maintaining the parent-child relationships found in the original tree.
-
-    Returning the New Node: Finally, it returns a pointer to the newly created node (the root of the copied subtree),
-    allowing the parent call to link this new subtree correctly into the larger tree being constructed.
-    */
-
-
-
-    // Helper function to clear the tree, recursively freeing memory
-    void clear(Node* node) {
-        if (node != nullptr) {
-            clear(node->left);  // Recursively clear the left subtree
-            clear(node->right); // Recursively clear the right subtree
-            delete node;        // Delete the current node
-        }
-    }
-
-
-    void insertFixUp(Node* node) {
-
-        // TODO: Implement fix-up logic to maintain Red-Black properties after insertion
-        // This function involves a series of case-based adjustments, including rotations and re-coloring of nodes.
-
-    }
-
-    void rotateLeft(Node* node) {
-
-        // TODO: Implement left rotation
-        // Performs a left rotation around the given node x
-
-    
-    }
-
-    void rotateRight(Node* node) {
-        // TODO: Implement right rotation
-        // Performs a right rotation around the given node x
-    }
-
-    // Any other helper functions we might need (e.g., transplant, deleteFixUp, etc.)
-
-
-
-
-    // Transplant Function
-        // The transplant function is used to replace one subtree as a child of its parent with another subtree.
-        // When you delete a node from a Red - Black Tree, we might need to replace the deleted node with its child(if it exists).
-        // The transplant function helps in doing this by linking the parent of the subtree being replaced to the new subtree.
-
-    void transplant(Node* u, Node* v) {
-        if (u->parent == nullptr) {
-            root = v; // u is the root node
-        }
-        else if (u == u->parent->left) {
-            u->parent->left = v; // u is a left child
-        }
-        else {
-            u->parent->right = v; // u is a right child
-        }
-        if (v != nullptr) {
-            v->parent = u->parent; // Update parent
-        }
-    }
-
-
-
-
-
-    // DeleteFixUp Function
-        // The deleteFixUp function is called after deleting a node to ensure that the Red - Black Tree properties are preserved.
-        // Deletion, especially when dealing with a black node, can lead to violations of the Red - Black properties.
-        // For example, deleting a black node might reduce the black height in one part of the tree,
-        // violating the property that all paths from the root to leaves have the same number of black nodes.
-
-        // The deleteFixUp function addresses these violations through a series of steps that may include recoloring nodes and performing rotations.
-        // The specific actions taken depend on the relationship between the node being fixed up (often the replacement node or the sibling of a removed leaf)
-        // and its siblings, parents, and other relatives in the tree structure.
-
-        // The actual implementation of deleteFixUp involves handling several specific cases based on the colors of the nodes involved and their positions in the tree.
-        // The goal is to redistribute black heights and ensure the tree remains balanced according to Red - Black Tree properties.
-
-        // Here is a starter:
-    void deleteFixUp(Node* x) {
-        while (x != root && x->color == BLACK) {
-            if (x == x->parent->left) {
-                Node* w = x->parent->right; // Sibling
-                if (w->color == RED) {
-                    // Case 1: x's sibling w is red
-                    w->color = BLACK; // Make sibling black
-                    x->parent->color = RED; // Make parent red
-                    rotateLeft(x->parent); // Rotate on parent
-                    w = x->parent->right; // Update sibling
-                }
-                if (w->left->color == BLACK && w->right->color == BLACK) {
-                    // Case 2: Both of w's children are black
-                    w->color = RED; // Recolor sibling
-                    x = x->parent; // Move up the tree
-                }
-                else {
-                    if (w->right->color == BLACK) {
-                        // Case 3: w's right child is black
-                        w->left->color = BLACK; // Make left child black
-                        w->color = RED; // Make sibling red
-                        rotateRight(w); // Rotate on sibling
-                        w = x->parent->right; // Update sibling
-                    }
-                    // Case 4: w's right child is red
-                    w->color = x->parent->color; // Sibling takes parent's color
-                    x->parent->color = BLACK; // Parent becomes black
-                    w->right->color = BLACK; // Right child becomes black
-                    rotateLeft(x->parent); // Rotate on parent
-                    x = root; // Break loop
-                }
-            }
-            else { // Mirror cases for x being the right child
-                Node* w = x->parent->left;
-                // Similar logic as above, with "left" and "right" swapped
-            }
-        }
-        x->color = BLACK; // Ensure the passed node is black
-    }
-
-
-    // Searches for a node by key and returns a pointer to the node.
-    Node* searchNode(const Key& key) const {
-        Node* current = root;
-        while (current != nullptr) {
-            if (key < current->key) {
-                current = current->left; // Move to the left subtree if the key is less than the current node's key
-            }
-            else if (key > current->key) {
-                current = current->right; // Move to the right subtree if the key is greater than the current node's key
-            }
-            else {
-                return current; // Key is found, return the current node
-            }
-        }
-        return nullptr; // Key is not found
-    }
-
-
-
-    // Finds the node with the minimum key in the subtree rooted at the given node.
-    Node* minimum(Node* node) const {
-        Node* current = node;
-        while (current != nullptr && current->left != nullptr) {
-            current = current->left; // Keep moving to the left child to find the minimum
-        }
-        return current; // The leftmost node is the minimum
-    }
-
-
-
-    // Finds the node with the maximum key in the subtree rooted at the given node.
-    Node* maximum(Node* node) const {
-        Node* current = node;
-        while (current != nullptr && current->right != nullptr) {
-            current = current->right; // Keep moving to the right child to find the maximum
-        }
-        return current; // The rightmost node is the maximum
-    }
-
-
-
-    // Finds the in-order successor of the given node
-    Node* successor(Node* node) const {
-        if (node->right != nullptr) {
-            return minimum(node->right); // The minimum in the right subtree
-        }
-        // Else, move up the tree until we've moved left
-        Node* current = node->parent;
-        while (current != nullptr && node == current->right) {
-            node = current;
-            current = current->parent;
-        }
-        return current;
-    }
-
-
-
-
-    // Finds the in-order predecessor of the given node
-    Node* predecessor(Node* node) const {
-        if (node->left != nullptr) {
-            return maximum(node->left); // The maximum in the left subtree
-        }
-        // Else, move up the tree until we've moved right
-        Node* current = node->parent;
-        while (current != nullptr && node == current->left) {
-            node = current;
-            current = current->parent;
-        }
-        return current;
-    }
-
-    // Private helper functions for traversals
-    void inOrderHelper(Node* node) const {
-        if (node != nullptr) {
-            inOrderHelper(node->left);
-            cout << node->value << " "; // Assuming you want to print the value
-            inOrderHelper(node->right);
-        }
-    }
-
-    void preOrderHelper(Node* node) const {
-        if (node != nullptr) {
-            cout << node->value << " ";
-            preOrderHelper(node->left);
-            preOrderHelper(node->right);
-        }
-    }
-
-    void postOrderHelper(Node* node) const {
-        if (node != nullptr) {
-            postOrderHelper(node->left);
-            postOrderHelper(node->right);
-            cout << node->value << " ";
-        }
-    }
-
-    void levelOrderHelper(Node* node) const {
-        if (!node) return;
-        queue<Node*> q;
-        q.push(node);
-        while (!q.empty()) {
-            Node* current = q.front();
-            q.pop();
-            cout << current->value << " ";
-            if (current->left != nullptr) q.push(current->left);
-            if (current->right != nullptr) q.push(current->right);
-        }
-    }
-
-
-
-    /*
-    
-            Additional Functionalities and Considerations
-
-        Search Operation: We need to make sure we have a robust search operation that can efficiently find elements within the tree based on their keys.
-
-        Traversal Methods: Depending on our application's requirements, we might need to implement various tree traversal methods
-        (in-order, pre-order, post-order, or level-order) to process or display the data stored in the tree in a particular order.
-
-        Tree Balancing on Deletion: Besides the deleteFixUp function, make sure deletion process correctly handles different scenarios,
-        like deleting a node with no children, one child, or two children, while maintaining the Red-Black Tree properties.
-
-        Memory Management: Implement a destructor for the Red-Black Tree class that properly deallocates all allocated nodes to prevent memory leaks.
-        We might also need copy constructor and copy assignment operator if we plan to copy our tree structures.
-
-        Testing and Validation: Rigorous testing is crucial to ensure that the Red-Black Tree implementation correctly maintains its properties through all operations.
-        Edge cases, such as inserting multiple items with the same key or removing items from a heavily imbalanced tree.
-
-        Template Implementation
-        The use of templates in our Red-Black Tree implementation allows it to be generic, meaning we can store any type of key-value pairs in the tree.
-        Type Independence: We can use the same Red-Black Tree structure to store different types of data without needing to rewrite or overload the class specifically for those types.
-        Reusability: The template-based implementation can be used across various parts of our program or even in future projects without being tied to a specific data type.
-        Integration: With a template, we can define the key and value types at compile-time based on what we need for a particular instance of our application,
-        making it easier to integrate with other parts of the system.
-
-        Integration with the Main Program
-        By designing our Red-Black Tree as a generic template, we enable the main program to instantiate trees with different data types as needed.
-        This is especially useful in our case, where we want to compare the performance of Red-Black Trees against HashTables for storing and manipulating data.
-        We can define the type of key and value that matches our data model (for example, using a string as the key and a custom struct as the value)
-        and use the tree for efficient data storage and retrieval operations.
-
-    */
-
-
-
-
-    /*
-    
-        Implementing a copy constructor and a copy assignment operator for a complex data structure like a Red-Black Tree is important
-        for ensuring that deep copies of the tree can be made safely and accurately.
-        These functionalities are particularly useful in several scenarios:
-
-        1. Creating a Backup
-        In situations where we need to preserve the current state of a tree before performing operations
-        that could potentially alter it significantly (such as bulk insertions or deletions),
-        having a backup copy of the tree might be essential.
-        This allows us to revert to the original state if needed.
-
-        2. Functionality that Requires Copies
-        Certain algorithms or operations may require working with copies of the tree rather than the original.
-        For example, if we implement an undo feature or need to compare the states of a tree at different points in time,
-        we would need to create copies of the tree structure.
-
-        3. Passing Trees to Functions
-        When passing a Red-Black Tree to a function, if we want to avoid modifying the original tree, passing a copy would be necessary.
-        While passing by reference is common for efficiency, there are cases where working on a copy
-        within a function is required to preserve the integrity of the original data.
-
-        4. Returning Trees from Functions
-        Similar to passing trees to functions, if we return a Red-Black Tree from a function and want to ensure that the caller gets a separate,
-        modifiable copy that doesn't affect the original tree within the function, implementing deep copy logic is crucial.
-
-        5. Working with Containers of Trees
-        If we store multiple Red-Black Trees within a container (like a vector or a list),
-        and we need to duplicate the container along with the trees inside it, having a copy constructor
-        and a copy assignment operator ensures that each tree is properly duplicated.
-
-        Implementing Deep Copy
-        For a Red-Black Tree, a shallow copy (the default behavior if we don't explicitly implement copying) is insufficient
-        because it would only copy the root node pointer, leading both the original and copied tree to share the same nodes.
-        This sharing could result in changes to one tree affecting the other and lead to issues when one tree is deleted
-        (the other would be left with dangling pointers). A deep copy ensures that a completely new tree is created,
-        with its own nodes that replicate the structure and content of the original tree.
-
-    */
-
-
-
-    // Other helpers...
-    // We can implement private helper functions here if they are simple enough, or
-    // just declare them here and define them outside the class if they are complex. 
-    // with this header for the template
-    // template <typename Key, typename Value>
+    // Helper functions
+    Node* copySubtree(Node* node);
+    void clear(Node* node);
+    void insertFixUp(Node* node);
+    void deleteFixUp(Node* node);
+    void rotateLeft(Node* node);
+    void rotateRight(Node* node);
+    void transplant(Node* u, Node* v);
+    Node* minimum(Node* node) const;
+    Node* maximum(Node* node) const;
+    void inOrderHelper(Node* node) const;
+    void preOrderHelper(Node* node) const;
+    void postOrderHelper(Node* node) const;
+    void levelOrderHelper(Node* node) const;
+    void getAllValuesHelper(Node* node, vector<Value>& values) const;
 
 };
+
+
+
+// Method to insert a new key-value pair into the Red-Black Tree
+template <typename Key, typename Value>
+void RedBlackTree<Key, Value>::insert(const Key& key, const Value& value) {
+    Node* newNode = new Node(key, value);           // Create a new node with the given key and value
+
+    // Initialize variables for traversal
+    Node* parentNode = nullptr;
+    Node* currentNode = this->root;
+
+    // Traverse the tree to find the appropriate position for the new node
+    while (currentNode != nullptr) {
+        // Store the current node as the parent node
+        parentNode = currentNode;
+
+        // Determine whether to move left or right based on the key comparison
+        if (newNode->key < currentNode->key) {
+            currentNode = currentNode->left;
+        }
+        else {
+            currentNode = currentNode->right;
+        }
+    }
+
+    // Set the parent of the new node
+    newNode->parent = parentNode;
+
+    // Update the appropriate child pointer of the parent node
+    if (parentNode == nullptr) {
+        root = newNode;
+    }
+    else if (newNode->key < parentNode->key) {
+        parentNode->left = newNode;
+    }
+    else {
+        parentNode->right = newNode;
+    }
+
+    // Set the color of the new node to red
+    newNode->isRed = true;
+
+    // Fix any violations of the Red-Black Tree properties caused by the insertion
+    insertFixUp(newNode);
+}
+
+
+
+template <typename Key, typename Value>
+void RedBlackTree<Key, Value>::clear(Node* node) {
+    if (node) {
+        clear(node->left);  // Recursively clear the left subtree
+        clear(node->right); // Recursively clear the right subtree
+        delete node;        // Delete the current node
+    }
+}
+
+
+template <typename Key, typename Value>
+typename RedBlackTree<Key, Value>::Node* RedBlackTree<Key, Value>::copySubtree(Node* node) {
+    if (node == nullptr) return nullptr; // Base case: If the node is null, return null.
+
+    Node* newNode = new Node(node->key, node->value, node->isRed); // Copy the node
+    newNode->left = copySubtree(node->left);    // Recursively copy the left subtree
+    newNode->right = copySubtree(node->right);  // Recursively copy the right subtree
+
+    // Set the parent pointers of the new child nodes
+    if (newNode->left != nullptr) newNode->left->parent = newNode;
+    if (newNode->right != nullptr) newNode->right->parent = newNode;
+
+    return newNode; // Return the newly created subtree root
+}
+
+
+// Method to fix any violations of the Red-Black Tree properties caused by inserting a node
+template <typename Key, typename Value>
+void RedBlackTree<Key, Value>::insertFixUp(Node* node) {
+    // Continue fixing violations until the node becomes the root or its parent is black
+    while (node != root && node->parent->isRed) {
+        Node* grandparent = node->parent->parent;
+
+        // If the parent is the left child of the grandparent
+        if (node->parent == grandparent->left) {
+            Node* uncle = grandparent->right;
+
+            // Case 1: Uncle is red
+            if (uncle && uncle->isRed) {
+                // Recolor nodes
+                node->parent->isRed = BLACK;
+                uncle->isRed = BLACK;
+                grandparent->isRed = RED;
+                node = grandparent;                 // Move up to the grandparent
+            }
+            else {
+                // Case 2: Uncle is black and current node is a right child
+                if (node == node->parent->right) {
+                    node = node->parent;            // Move up to the parent
+                    rotateLeft(node);               // Perform left rotation
+                }
+                // Case 3: Uncle is black and current node is a left child
+                node->parent->isRed = BLACK;
+                grandparent->isRed = RED;
+                rotateRight(grandparent);           // Perform right rotation
+            }
+        }
+        // If the parent is the right child of the grandparent
+        else {
+            Node* uncle = grandparent->left;
+
+            // Case 1: Uncle is red
+            if (uncle && uncle->isRed) {
+                // Recolor nodes
+                node->parent->isRed = BLACK;
+                uncle->isRed = BLACK;
+                grandparent->isRed = RED;
+                node = grandparent;                 // Move up to the grandparent
+            }
+            else {
+                // Case 2: Uncle is black and current node is a left child
+                if (node == node->parent->left) {
+                    node = node->parent;            // Move up to the parent
+                    rotateRight(node);              // Perform right rotation
+                }
+                // Case 3: Uncle is black and current node is a right child
+                node->parent->isRed = BLACK;
+                grandparent->isRed = RED;
+                rotateLeft(grandparent);            // Perform left rotation
+            }
+        }
+    }
+    root->isRed = BLACK;    // Ensure the root is black to maintain Red-Black Tree properties
+}
+
+
+// Method to remove a node with a given key from the Red-Black Tree
+template <typename Key, typename Value>
+bool RedBlackTree<Key, Value>::remove(const Key& key) {
+    // Search for the node to delete
+    Node* nodeToDelete = searchNode(key);
+    if (!nodeToDelete) return false;                                // If node not found, return false
+
+    Node* childNode = nullptr;                                      // Initialize pointer to child node
+    Node* replacementNode = nodeToDelete;                           // Initialize replacement node to the node to delete
+    bool originalColor = replacementNode->isRed;                    // Store original color of replacement node
+
+    // Determine the child node based on the presence of left and right children
+    if (nodeToDelete->left == nullptr) {
+        childNode = nodeToDelete->right;                            // If left child is null, set child node to right child
+        transplant(nodeToDelete, nodeToDelete->right);              // Replace nodeToDelete with its right child
+    }
+    else if (nodeToDelete->right == nullptr) {
+        childNode = nodeToDelete->left;                             // If right child is null, set child node to left child
+        transplant(nodeToDelete, nodeToDelete->left);               // Replace nodeToDelete with its left child
+    }
+    else {
+        // If the node to delete has both left and right children
+        replacementNode = minimum(nodeToDelete->right);             // Find the successor node
+        originalColor = replacementNode->isRed;                     // Store original color of the successor node
+        childNode = replacementNode->right;                         // Get the child node of the successor
+
+        // If the successor is the right child of the node to delete
+        if (replacementNode->parent == nodeToDelete) {
+            if (childNode) childNode->parent = replacementNode;     // Set the parent of the child node to the replacement node
+        }
+        else {
+            // Perform transplant operation
+            transplant(replacementNode, replacementNode->right);    // Replace the replacement node with its right child
+            replacementNode->right = nodeToDelete->right;           // Update right child of replacement node
+            replacementNode->right->parent = replacementNode;       // Update parent of right child
+        }
+
+        // Perform transplant operation
+        transplant(nodeToDelete, replacementNode);                  // Replace nodeToDelete with the successor node
+        replacementNode->left = nodeToDelete->left;                 // Update left child of replacement node
+        replacementNode->left->parent = replacementNode;            // Update parent of left child
+        replacementNode->isRed = nodeToDelete->isRed;               // Update color of replacement node
+    }
+
+    delete nodeToDelete;                                            // Delete the node
+
+    // If the original color was black, fix any violations of Red-Black Tree properties
+    if (!originalColor) {
+        deleteFixUp(childNode);                                     // Fix violations starting from the child node
+    }
+
+    return true;                                                    // Return true if deletion is successful 
+}
+
+
+
+
+// Method to search for a key in the Red-Black Tree and return its value if found, otherwise return nullptr
+template <typename Key, typename Value>
+Value* RedBlackTree<Key, Value>::search(const Key& key) const {
+    Node* node = searchNode(key);                   // Search for the node with the given key
+    return node ? &(node->value) : nullptr;         // If node found, return a pointer to its value, otherwise return nullptr
+}
+
+// Method to search for a node with a given key in the Red-Black Tree and return a pointer to it
+template <typename Key, typename Value>
+typename RedBlackTree<Key, Value>::Node* RedBlackTree<Key, Value>::searchNode(const Key& key) const {
+    Node* node = root;                              // Start searching from the root node
+    while (node != nullptr) {
+        if (key < node->key) {
+            node = node->left;                      // If key is less than current node's key, move to the left child
+        }
+        else if (key > node->key) {
+            node = node->right;                     // If key is greater than current node's key, move to the right child
+        }
+        else {
+            return node;                            // If key matches current node's key, return pointer to the node
+        }
+    }
+    return nullptr;                                 // If key not found, return nullptr
+}
+
+
+
+// Method to perform an in-order traversal of the Red-Black Tree starting from the root node
+template <typename Key, typename Value>
+void RedBlackTree<Key, Value>::inOrderTraversal() const {
+    inOrderHelper(root); // Call the helper function to perform in-order traversal
+}
+
+// Method to perform a pre-order traversal of the Red-Black Tree starting from the root node
+template <typename Key, typename Value>
+void RedBlackTree<Key, Value>::preOrderTraversal() const {
+    preOrderHelper(root); // Call the helper function to perform pre-order traversal
+}
+
+// Method to perform a post-order traversal of the Red-Black Tree starting from the root node
+template <typename Key, typename Value>
+void RedBlackTree<Key, Value>::postOrderTraversal() const {
+    postOrderHelper(root); // Call the helper function to perform post-order traversal
+}
+
+// Method to perform a level-order traversal of the Red-Black Tree starting from the root node
+template <typename Key, typename Value>
+void RedBlackTree<Key, Value>::levelOrderTraversal() const {
+    levelOrderHelper(root); // Call the helper function to perform level-order traversal
+}
+
+
+// Helper method for in-order traversal of the Red-Black Tree
+template <typename Key, typename Value>
+void RedBlackTree<Key, Value>::inOrderHelper(Node* node) const {
+    if (node != nullptr) {
+        inOrderHelper(node->left);      // Visit left child
+        cout << node->value << " ";     // Process current node
+        inOrderHelper(node->right);     // Visit right child
+    }
+}
+
+// Helper method for pre-order traversal of the Red-Black Tree
+template <typename Key, typename Value>
+void RedBlackTree<Key, Value>::preOrderHelper(Node* node) const {
+    if (node != nullptr) {
+        cout << node->value << " ";     // Process current node
+        preOrderHelper(node->left);     // Visit left child
+        preOrderHelper(node->right);    // Visit right child
+    }
+}
+
+// Helper method for post-order traversal of the Red-Black Tree
+template <typename Key, typename Value>
+void RedBlackTree<Key, Value>::postOrderHelper(Node* node) const {
+    if (node != nullptr) {
+        postOrderHelper(node->left);    // Visit left child
+        postOrderHelper(node->right);   // Visit right child
+        cout << node->value << " ";     // Process current node
+    }
+}
+
+
+// Helper method for level-order traversal of the Red-Black Tree
+template <typename Key, typename Value>
+void RedBlackTree<Key, Value>::levelOrderHelper(Node* node) const {
+    if (!node) return;                                      // If node is null, return
+    queue<Node*> q;                                         // Create a queue for level-order traversal
+    q.push(node);                                           // Push the root node into the queue
+
+    // Perform level-order traversal
+    while (!q.empty()) {
+        Node* current = q.front();                          // Get the front node of the queue
+        q.pop();                                            // Remove the front node from the queue
+        cout << current->value << " ";                      // Process the current node
+
+        // Enqueue left and right children if they exist
+        if (current->left != nullptr) q.push(current->left);
+        if (current->right != nullptr) q.push(current->right);
+    }
+}
+
+
+// Method to perform a left rotation in the Red-Black Tree
+template <typename Key, typename Value>
+void RedBlackTree<Key, Value>::rotateLeft(Node* currentNode) {
+    Node* rightChild = currentNode->right;                  // Store the right child of the current node as 'rightChild'
+    currentNode->right = rightChild->left;                  // Make the left child of 'rightChild' the right child of 'currentNode'
+
+    // Update the parent pointer of the left child of 'rightChild'
+    if (rightChild->left != nullptr) {
+        rightChild->left->parent = currentNode;
+    }
+
+    rightChild->parent = currentNode->parent;               // Update the parent pointer of 'rightChild'
+
+    // If 'currentNode' is the root of the tree, update the root to 'rightChild'
+    if (currentNode->parent == nullptr) {
+        root = rightChild;
+    }
+    // If 'currentNode' is a left child, update the left child of its parent to 'rightChild'
+    else if (currentNode == currentNode->parent->left) {
+        currentNode->parent->left = rightChild;
+    }
+    // If 'currentNode' is a right child, update the right child of its parent to 'rightChild'
+    else {
+        currentNode->parent->right = rightChild;
+    }
+
+    rightChild->left = currentNode;                         // Make 'currentNode' the left child of 'rightChild'
+    currentNode->parent = rightChild;                       // Update the parent pointer of 'currentNode' to 'rightChild'
+}
+
+
+
+// Method to perform a right rotation in the Red-Black Tree
+template <typename Key, typename Value>
+void RedBlackTree<Key, Value>::rotateRight(Node* currentNode) {
+    Node* leftChild = currentNode->left;                // Store the left child of the current node as 'leftChild'
+    currentNode->left = leftChild->right;               // Make the right child of 'leftChild' the left child of 'currentNode'
+
+    // Update the parent pointer of the right child of 'leftChild'
+    if (leftChild->right != nullptr) {
+        leftChild->right->parent = currentNode;
+    }
+
+    leftChild->parent = currentNode->parent;            // Update the parent pointer of 'leftChild'
+
+    // If 'currentNode' is the root of the tree, update the root to 'leftChild'
+    if (currentNode->parent == nullptr) {
+        root = leftChild;
+    }
+    // If 'currentNode' is a right child, update the right child of its parent to 'leftChild'
+    else if (currentNode == currentNode->parent->right) {
+        currentNode->parent->right = leftChild;
+    }
+    // If 'currentNode' is a left child, update the left child of its parent to 'leftChild'
+    else {
+        currentNode->parent->left = leftChild;
+    }
+
+    leftChild->right = currentNode;                     // Make 'currentNode' the right child of 'leftChild'
+    currentNode->parent = leftChild;                    // Update the parent pointer of 'currentNode' to 'leftChild'
+}
+
+// Method to transplant a node in the Red-Black Tree
+template <typename Key, typename Value>
+void RedBlackTree<Key, Value>::transplant(Node* oldNode, Node* newNode) {
+    if (oldNode->parent == nullptr) {
+        root = newNode;                                 // If 'oldNode' is the root, update the root to 'newNode'
+    }
+    else if (oldNode == oldNode->parent->left) {
+        oldNode->parent->left = newNode;                // If 'oldNode' is a left child, update its parent's left child to 'newNode'
+    }
+    else {
+        oldNode->parent->right = newNode;               // If 'oldNode' is a right child, update its parent's right child to 'newNode'
+    }
+
+    if (newNode != nullptr) {
+        newNode->parent = oldNode->parent;              // Update the parent pointer of 'newNode' to 'oldNode's parent
+    }
+}
+
+
+// Method to fix violations in Red-Black Tree after deletion
+template <typename Key, typename Value>
+void RedBlackTree<Key, Value>::deleteFixUp(Node* currentNode) {
+    while (currentNode != root && !currentNode->isRed) {
+        // Case where currentNode is a left child
+        if (currentNode == currentNode->parent->left) {
+            Node* siblingNode = currentNode->parent->right;         // Store sibling node of currentNode as 'siblingNode'
+
+            // Case where siblingNode is red
+            if (siblingNode->isRed) {
+                siblingNode->isRed = false;                         // Color siblingNode black
+                currentNode->parent->isRed = true;                  // Color currentNode's parent red
+                rotateLeft(currentNode->parent);                    // Perform left rotation on currentNode's parent
+                siblingNode = currentNode->parent->right;           // Update siblingNode to the right child of currentNode's parent
+            }
+
+            // Case where siblingNode's children are both black
+            if (!siblingNode->left->isRed && !siblingNode->right->isRed) {
+                siblingNode->isRed = true;                          // Color siblingNode red
+                currentNode = currentNode->parent;                  // Move up to currentNode's parent
+            }
+            else {
+                // Case where siblingNode's right child is black
+                if (!siblingNode->right->isRed) {
+                    siblingNode->left->isRed = false;               // Color siblingNode's left child black
+                    siblingNode->isRed = true;                      // Color siblingNode red
+                    rotateRight(siblingNode);                       // Perform right rotation on siblingNode
+                    siblingNode = currentNode->parent->right;       // Update siblingNode to the right child of currentNode's parent
+                }
+
+                siblingNode->isRed = currentNode->parent->isRed;    // Color siblingNode the same as currentNode's parent
+                currentNode->parent->isRed = false;                 // Color currentNode's parent black
+                siblingNode->right->isRed = false;                  // Color siblingNode's right child black
+                rotateLeft(currentNode->parent);                    // Perform left rotation on currentNode's parent
+                currentNode = root;                                 // Update currentNode to root
+            }
+        }
+        // Case where currentNode is a right child
+        else {
+            Node* siblingNode = currentNode->parent->left;          // Store sibling node of currentNode as 'siblingNode'
+
+            // Case where siblingNode is red
+            if (siblingNode->isRed) {
+                siblingNode->isRed = false;                         // Color siblingNode black
+                currentNode->parent->isRed = true;                  // Color currentNode's parent red
+                rotateRight(currentNode->parent);                   // Perform right rotation on currentNode's parent
+                siblingNode = currentNode->parent->left;            // Update siblingNode to the left child of currentNode's parent
+            }
+
+            // Case where siblingNode's children are both black
+            if (!siblingNode->right->isRed && !siblingNode->left->isRed) {
+                siblingNode->isRed = true;                          // Color siblingNode red
+                currentNode = currentNode->parent;                  // Move up to currentNode's parent
+            }
+            else {
+                // Case where siblingNode's left child is black
+                if (!siblingNode->left->isRed) {
+                    siblingNode->right->isRed = false;              // Color siblingNode's right child black
+                    siblingNode->isRed = true;                      // Color siblingNode red
+                    rotateLeft(siblingNode);                        // Perform left rotation on siblingNode
+                    siblingNode = currentNode->parent->left;        // Update siblingNode to the left child of currentNode's parent
+                }
+
+                siblingNode->isRed = currentNode->parent->isRed;    // Color siblingNode the same as currentNode's parent
+                currentNode->parent->isRed = false;                 // Color currentNode's parent black
+                siblingNode->left->isRed = false;                   // Color siblingNode's left child black
+                rotateRight(currentNode->parent);                   // Perform right rotation on currentNode's parent
+                currentNode = root;                                 // Update currentNode to root
+            }
+        }
+    }
+    currentNode->isRed = false;                                     // Color currentNode black
+}
+
+
+
+// Method to find the minimum node in the Red-Black Tree
+template <typename Key, typename Value>
+typename RedBlackTree<Key, Value>::Node* RedBlackTree<Key, Value>::minimum(Node* currentNode) const {
+    if (currentNode == nullptr) return nullptr;                     // Ensure that the passed node is not null
+    while (currentNode->left != nullptr) {
+        currentNode = currentNode->left;                            // Traverse left until reaching the leftmost node
+    }
+    return currentNode;                                             // Return the minimum node
+}
+
+// Method to find the maximum node in the Red-Black Tree
+template <typename Key, typename Value>
+typename RedBlackTree<Key, Value>::Node* RedBlackTree<Key, Value>::maximum(Node* currentNode) const {
+    if (currentNode == nullptr) return nullptr;                     // Ensure that the passed node is not null
+    while (currentNode->right != nullptr) {
+        currentNode = currentNode->right;                           // Traverse right until reaching the rightmost node
+    }
+    return currentNode;                                             // Return the maximum node
+}
+
+
+// This method collects all values from the tree into a vector in sorted order
+template <typename Key, typename Value>
+vector<Value> RedBlackTree<Key, Value>::getAllValues() const {
+    vector<Value> values;                                           // Vector to store values from the tree
+    getAllValuesHelper(root, values);                               // Call helper function to perform in-order traversal
+    return values;                                                  // Return the vector of values
+}
+
+// Helper function to perform in-order traversal and collect values
+template <typename Key, typename Value>
+void RedBlackTree<Key, Value>::getAllValuesHelper(Node* currentNode, vector<Value>& values) const {
+    if (currentNode != nullptr) {
+        getAllValuesHelper(currentNode->left, values);              // Traverse left subtree
+        values.push_back(currentNode->value);                       // Store the value of the current node
+        getAllValuesHelper(currentNode->right, values);             // Traverse right subtree
+    }
+}
+
+
+#endif // REDBLACKTREE_H
 
 
 
