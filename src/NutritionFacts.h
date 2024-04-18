@@ -8,7 +8,8 @@ public:
     Nutrients nutrients;
     std::string servingDescription;
 
-    explicit NutritionFacts(std::string servingDescription = "") : servingDescription(std::move(servingDescription)) {}
+    NutritionFacts() {servingDescription = "";}
+    //explicit NutritionFacts(std::string servingDescription = "") : servingDescription(std::move(servingDescription)) {}
 
     // Add or update nutrients by specifying the nutrient name and adjustments
     void addOrUpdateNutrient(const std::string& nutrientName, double amount, double dailyValue) {
