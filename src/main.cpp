@@ -5,6 +5,7 @@
 #include <string>
 #include "FoodDatabase.h"
 
+using namespace std;
 void DisplayMainMenu() {
     cout << "Welcome to NutritiousDB - Your Personal Nutrition Guide\n";
     cout << "Please select an option:\n";
