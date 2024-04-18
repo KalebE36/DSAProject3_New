@@ -29,7 +29,6 @@ void SearchNutritionFacts(FoodDatabase<FoodItem>& db) {
     double servingSize = 100.0; // Default value, can also ask user for this
     // Implementation to search and display nutrition facts
 
-
     FoodItem* item = db.getItemById(identifier);
     if (item) {
         std::cout << "Nutrition facts for " << identifier << ":\n";

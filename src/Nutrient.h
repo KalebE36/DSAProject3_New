@@ -8,8 +8,8 @@ class Nutrient {
 public:
     string name;
     double amount;
-    double dailyValue;
+    int dailyValue;
 
-    Nutrient(string name, double amount, double dailyValue)
-        : name(name), amount(amount), dailyValue(dailyValue) {}
+    Nutrient(const string& name, double amount, int dailyValue)
+            : name(name), amount(amount), dailyValue(dailyValue) {}
 };

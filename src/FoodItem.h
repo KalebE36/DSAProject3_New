@@ -4,7 +4,8 @@
 
 class FoodItem {
 public:
-    string id;
+    int id;
+    string name;
     string description;
 
     int selectedQuantity;
@@ -17,8 +18,9 @@ public:
     std::map<std::string, double> nutrients;
     map<string, pair<double, string>> servings;  // Key is serving description, value is weight and description
 
+    FoodItem() {id = 0; name = "NULL"; description = "NULL"; selectedQuantity = 0; selectedWeight = "NULL";}
 
-    FoodItem(string id, string description, const NutritionFacts& nutrition)
+    FoodItem(int id, string description, const NutritionFacts& nutrition)
         : id(id), description(description), nutrition(nutrition) {}
 
     void addNutrient(const std::string& nutrientCode, double amount) {
