@@ -66,7 +66,9 @@ public:
         bool isRed = RED;             // Color of the node, true for red and false for black
 
         // Constructor initializing key and value
-        Node(Key k, Value v) : key(k), value(v) {}
+        //Node(Key k, Value v) : key(k), value(v) {}
+        Node(Key k, Value v, bool isRed = true) : key(k), value(v), isRed(isRed) {}
+
     };
     Node* root;                       // Pointer to the root node of the tree
 
@@ -169,7 +171,6 @@ void RedBlackTree<Key, Value>::insert(const Key& key, const Value& value) {
 }
 
 
-
 template <typename Key, typename Value>
 void RedBlackTree<Key, Value>::clear(Node* node) {
     if (node) {
@@ -178,7 +179,6 @@ void RedBlackTree<Key, Value>::clear(Node* node) {
         delete node;        // Delete the current node
     }
 }
-
 
 template <typename Key, typename Value>
 typename RedBlackTree<Key, Value>::Node* RedBlackTree<Key, Value>::copySubtree(Node* node) {
@@ -196,12 +196,18 @@ typename RedBlackTree<Key, Value>::Node* RedBlackTree<Key, Value>::copySubtree(N
 }
 
 
+
 // Method to fix any violations of the Red-Black Tree properties caused by inserting a node
 template <typename Key, typename Value>
 void RedBlackTree<Key, Value>::insertFixUp(Node* node) {
     // Continue fixing violations until the node becomes the root or its parent is black
     while (node != root && node->parent->isRed) {
         Node* grandparent = node->parent->parent;
+
+        // Safety check to ensure grandparent is not null before using it
+        if (!grandparent) {
+            break; // Should not normally happen, as parent of root should not be red
+        }
 
         // If the parent is the left child of the grandparent
         if (node->parent == grandparent->left) {
@@ -222,9 +228,11 @@ void RedBlackTree<Key, Value>::insertFixUp(Node* node) {
                     rotateLeft(node);               // Perform left rotation
                 }
                 // Case 3: Uncle is black and current node is a left child
-                node->parent->isRed = BLACK;
-                grandparent->isRed = RED;
-                rotateRight(grandparent);           // Perform right rotation
+                if (grandparent) { // Additional check for safety
+                    node->parent->isRed = BLACK;
+                    grandparent->isRed = RED;
+                    rotateRight(grandparent);           // Perform right rotation
+                }
             }
         }
         // If the parent is the right child of the grandparent
@@ -246,9 +254,11 @@ void RedBlackTree<Key, Value>::insertFixUp(Node* node) {
                     rotateRight(node);              // Perform right rotation
                 }
                 // Case 3: Uncle is black and current node is a right child
-                node->parent->isRed = BLACK;
-                grandparent->isRed = RED;
-                rotateLeft(grandparent);            // Perform left rotation
+                if (grandparent) { // Additional check for safety
+                    node->parent->isRed = BLACK;
+                    grandparent->isRed = RED;
+                    rotateLeft(grandparent);            // Perform left rotation
+                }
             }
         }
     }
@@ -613,7 +623,6 @@ void RedBlackTree<Key, Value>::getAllValuesHelper(Node* currentNode, vector<Valu
 }
 
 
+
 #endif // REDBLACKTREE_H
-
-
 
