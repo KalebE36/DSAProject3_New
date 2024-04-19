@@ -379,9 +379,9 @@ void RedBlackTree<Key, Value>::levelOrderTraversal() const {
 template <typename Key, typename Value>
 void RedBlackTree<Key, Value>::inOrderHelper(Node* node) const {
     if (node != nullptr) {
-        inOrderHelper(node->left);      // Visit left child
-        cout << node->value << " ";     // Process current node
-        inOrderHelper(node->right);     // Visit right child
+        inOrderHelper(node->left);                              // Visit left child
+        std::cout << "Key: " << node->key << ", Name: " << node->value.name << std::endl;  // Process current node's name
+        inOrderHelper(node->right);                             // Visit right child
     }
 }
 
@@ -389,7 +389,7 @@ void RedBlackTree<Key, Value>::inOrderHelper(Node* node) const {
 template <typename Key, typename Value>
 void RedBlackTree<Key, Value>::preOrderHelper(Node* node) const {
     if (node != nullptr) {
-        cout << node->value << " ";     // Process current node
+        std::cout << "Key: " << node->key << ", Name: " << node->value.name << std::endl;
         preOrderHelper(node->left);     // Visit left child
         preOrderHelper(node->right);    // Visit right child
     }
@@ -401,7 +401,7 @@ void RedBlackTree<Key, Value>::postOrderHelper(Node* node) const {
     if (node != nullptr) {
         postOrderHelper(node->left);    // Visit left child
         postOrderHelper(node->right);   // Visit right child
-        cout << node->value << " ";     // Process current node
+        std::cout << "Key: " << node->key << ", Name: " << node->value.name << std::endl;
     }
 }
 
@@ -410,14 +410,14 @@ void RedBlackTree<Key, Value>::postOrderHelper(Node* node) const {
 template <typename Key, typename Value>
 void RedBlackTree<Key, Value>::levelOrderHelper(Node* node) const {
     if (!node) return;                                      // If node is null, return
-    queue<Node*> q;                                         // Create a queue for level-order traversal
+    std::queue<Node*> q;                                    // Create a queue for level-order traversal
     q.push(node);                                           // Push the root node into the queue
 
     // Perform level-order traversal
     while (!q.empty()) {
         Node* current = q.front();                          // Get the front node of the queue
         q.pop();                                            // Remove the front node from the queue
-        cout << current->value << " ";                      // Process the current node
+        std::cout << "Key: " << current->key << ", Name: " << current->value.name << ", Description: " << current->value.description << std::endl;
 
         // Enqueue left and right children if they exist
         if (current->left != nullptr) q.push(current->left);
@@ -625,4 +625,3 @@ void RedBlackTree<Key, Value>::getAllValuesHelper(Node* currentNode, vector<Valu
 
 
 #endif // REDBLACKTREE_H
-
