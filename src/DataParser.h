@@ -5,6 +5,7 @@
 #include <sstream>
 #include "FoodItem.h"
 #include "Nutrient.h"
+#include "FoodDatabase.h"
 #include "NutritionFacts.h"
 #include "RedBlackTree.h"
 
@@ -12,10 +13,9 @@ using namespace std;
 /* This is a very general idea of a data parser that we could use for csv files */
 class DataParser {
 private:
-    unordered_map<int, FoodItem> RBT;
+    RedBlackTree<int, FoodItem> RBT;
     unordered_map<int, string> nutrientIDM;
     unordered_map<int, vector<Nutrient>> nutrientPF;
-    unordered_map<int, Nutrients>nutrientsPF;
     fstream currFile;
 
 
@@ -23,14 +23,14 @@ public:
 
     void parseFoodCSV() {
         currFile.open("../db/food.csv");
-        if(!currFile.is_open()) {
+        if (!currFile.is_open()) {
             std::cout << "Error opening food.csv" << std::endl;
             std::exit(1);
         }
 
         std::string line;
         int count = 0;
-        while(getline(currFile, line) && (count < 200000)) {
+        while (getline(currFile, line) && (count < 200001)) {
             std::stringstream ss(line);
             std::string id, data_type, name, food_cat_id, publ_date, market, trade, mic_dat;
             getline(ss, id, ','); getline(ss, data_type, ','); getline(ss, name, ','); getline(ss, food_cat_id, ','); getline(ss, publ_date, ',');
@@ -39,48 +39,51 @@ public:
             id.erase(remove(id.begin(), id.end(), '"'), id.end());
             name.erase(remove(name.begin(), name.end(), '"'), name.end());
 
-
-            if(count > 0) {
+            if (count > 0) {
                 FoodItem item;
                 item.id = stoi(id);
                 item.name = name;
-                RBT[stoi(id)] = item;
+                RBT.insert(item.id, item); // Insert into Red-Black Tree
             }
             ++count;
         }
         currFile.close();
     }
 
-    /* parseFoodCSV will be the first FUNCTION CALLED FOR PARSING EACH TIME */
     void parseBrandedFoodCSV() {
         currFile.open("../db/branded_food.csv");
-        if(!currFile.is_open()) {
+        if (!currFile.is_open()) {
             cout << "Error opening food.csv" << endl;
             exit(1);
         }
 
         string line;
         int count = 0;
-        while(getline(currFile, line) && (count < 200000)) {
-            stringstream ss(line);
-            string id, name, city, foodCat, description, servSize, servSizeUnit, hhServing, bfoodCat, source, packageWeight, mD, aD, market, dD, pSC, tC, sD;
-            getline(ss, id, ','); getline(ss, name, ','); getline(ss, city, ','); getline(ss, foodCat, ',');
-            getline(ss, description, ',');getline(ss, servSize, ','); getline(ss, servSizeUnit, ',');
-            getline(ss, hhServing, ',');getline(ss, bfoodCat, ',');getline(ss, source, ',');
-            getline(ss, packageWeight, ',');getline(ss, mD, ',');getline(ss, aD, ',');
-            getline(ss, market, ',');getline(ss, dD, ',');getline(ss, pSC, ',');
-            getline(ss, tC, ',');getline(ss, sD, ',');
+            while (getline(currFile, line) && (count < 200001)) {
+                stringstream ss(line);
+                string id, branOwner, branName ,subBrand, gtin, description, notS,servSize, servSizeUnit, hhServing, bfoodCat, source, packageWeight, mD, aD, market, dD, pSC, tC, sD;
+                getline(ss, id, '"');getline(ss, id, '"');getline(ss, branOwner, '"');getline(ss, branOwner, '"');getline(ss, branName, '"');
+                getline(ss, branName, '"');getline(ss, subBrand, '"');getline(ss, subBrand, '"');getline(ss, gtin, '"');getline(ss, gtin, '"');
+                getline(ss, description, '"');getline(ss, description, '"');getline(ss, notS, '"');getline(ss, notS, '"');getline(ss, servSize, '"');getline(ss, servSize, '"');
+                getline(ss, servSizeUnit, '"');getline(ss, servSizeUnit, '"');getline(ss, hhServing, '"');getline(ss, hhServing, '"');getline(ss, bfoodCat, '"');
+                getline(ss, bfoodCat, '"');getline(ss, source, '"');getline(ss, source, '"');getline(ss, packageWeight, '"');getline(ss, packageWeight, '"');
+                getline(ss, mD, '"');getline(ss, mD, '"');getline(ss, aD, '"');getline(ss, aD, '"');getline(ss, market, '"');
+                getline(ss, market, '"');getline(ss, dD, '"');getline(ss, dD, '"');getline(ss, pSC, '"');getline(ss, pSC, '"');
+                getline(ss, tC, '"');getline(ss, tC, '"');getline(ss, sD, '"');getline(ss, sD, '"');
 
-
-            description.erase(remove(description.begin(), description.end(), '"'), description.end());
-            id.erase(remove(id.begin(), id.end(), '"'), id.end());
+           //description.erase(remove(description.begin(), description.end(), '"'), description.end());
+           id.erase(remove(id.begin(), id.end(), '"'), id.end());
 
 
             try {
-
-                RBT[stoi(id)].description = description;
-            } catch (...) {
-                cout << "Error converting id to integer: " << id << endl;               
+                if(count < 200000){
+                    RBT.search(stoi(id))->description = description;
+                    RBT.search(stoi(id))->servingUnit = servSizeUnit;
+                    RBT.search(stoi(id))->servingSize = servSize;
+                }
+            }
+            catch (...) {
+                cout << "Error converting id to integer: " << id << endl;
                 continue;
             }
             ++count;
@@ -90,17 +93,17 @@ public:
 
     void parseNutrientID() {
         currFile.open("../db/nutrient.csv");
-        if(!currFile.is_open()) {
+        if (!currFile.is_open()) {
             cout << "Error opening file" << endl;
             exit(1);
         }
 
         string line;
-        while(getline(currFile, line)) {
+        while (getline(currFile, line)) {
             stringstream ss(line);
             string id, name, unit_name, nutrient_nbr_str, rank_str;
-            getline(ss, id, ',');getline(ss, name, ',');getline(ss, unit_name, ',');
-            getline(ss, nutrient_nbr_str, ',');getline(ss, rank_str, ',');
+            getline(ss, id, ','); getline(ss, name, ','); getline(ss, unit_name, ',');
+            getline(ss, nutrient_nbr_str, ','); getline(ss, rank_str, ',');
 
             name.erase(remove(name.begin(), name.end(), '"'), name.end());
             id.erase(remove(id.begin(), id.end(), '"'), id.end());
@@ -109,7 +112,8 @@ public:
             try {
                 id_num = stoi(id);
                 nutrientIDM[id_num] = name;
-            } catch (...) {
+            }
+            catch (...) {
                 cout << "Error converting id to integer: " << id << endl;
                 continue; // Skip this row if id cannot be converted to integer
             }
@@ -127,13 +131,13 @@ public:
 
         string line;
         int count = 0;
-        while (getline(currFile, line) && (count < 200000)) {
+        while (getline(currFile, line) && (count < 200001)) {
             stringstream ss(line);
             string rID, fdcID, nutrientID, amount, dP, derV, min, max, median, loq, footnote, minYear, percDV;
-            getline(ss, rID, ',');getline(ss, fdcID, ',');getline(ss, nutrientID, ',');
-            getline(ss, amount, ',');getline(ss, dP, ',');getline(ss, derV, ',');
-            getline(ss, min, ',');getline(ss, max, ',');getline(ss, median, ',');
-            getline(ss, loq, ',');getline(ss, footnote, ',');getline(ss, minYear, ',');
+            getline(ss, rID, ','); getline(ss, fdcID, ','); getline(ss, nutrientID, ',');
+            getline(ss, amount, ','); getline(ss, dP, ','); getline(ss, derV, ',');
+            getline(ss, min, ','); getline(ss, max, ','); getline(ss, median, ',');
+            getline(ss, loq, ','); getline(ss, footnote, ','); getline(ss, minYear, ',');
             getline(ss, percDV, ',');
 
 
@@ -148,10 +152,10 @@ public:
                 if (percDV == "") {
                     percDV = "0.0";
                 }
-                cout << "FDIC: " << RBT[stoi(fdcID)].name << ", NUTRIENT:  " << nutrientIDM[stoi(nutrientID)] << ", Amount: " << amount << endl;
                 Nutrient nutrient(nutrientIDM[stoi(nutrientID)], stod(amount), stoi(percDV));
                 nutrientPF[stoi(fdcID)].push_back(nutrient);
-            } catch (...) {
+            }
+            catch (...) {
                 cout << "Error converting something to integer" << endl;
                 continue; // Skip this row if id cannot be converted to integer
             }
@@ -162,82 +166,63 @@ public:
     }
 
     void createNutrients() {
-        for(auto& element : nutrientPF) {
+        for (auto &element: nutrientPF) {
             Nutrients newNutrients;
-            for(auto& nutrient : element.second) {
+            for (auto &nutrient: element.second) {
                 if (nutrient.name == "calories") {
                     newNutrients.calories = nutrient;
-                }
-                else if (nutrient.name == "totalFat") {
+                } else if (nutrient.name == "totalFat") {
                     newNutrients.totalFat = nutrient;
-                }
-                else if (nutrient.name == "saturatedFat") {
+                } else if (nutrient.name == "saturatedFat") {
                     newNutrients.saturatedFat = nutrient;
-                }
-                else if (nutrient.name == "transFat") {
+                } else if (nutrient.name == "transFat") {
                     newNutrients.transFat = nutrient;
-                }
-                else if (nutrient.name == "Cholesterol") {
+                } else if (nutrient.name == "cholesterol") {
                     newNutrients.cholesterol = nutrient;
-                }
-                else if (nutrient.name == "Sodium") {
+                } else if (nutrient.name == "sodium") {
                     newNutrients.sodium = nutrient;
-                }
-                else if (nutrient.name == "Carbohydrates") {
+                } else if (nutrient.name == "totalCarbohydrates") {
                     newNutrients.totalCarbohydrates = nutrient;
-                }
-                else if (nutrient.name == "Fiber") {
+                } else if (nutrient.name == "fiber") {
                     newNutrients.fiber = nutrient;
-                }
-                else if (nutrient.name == "Sugars") {
+                } else if (nutrient.name == "sugar") {
                     newNutrients.sugar = nutrient;
-                }
-                else if (nutrient.name == "addedSugar") {
+                } else if (nutrient.name == "addedSugar") {
                     newNutrients.addedSugar = nutrient;
-                }
-                else if (nutrient.name == "Protein") {
+                } else if (nutrient.name == "protein") {
                     newNutrients.protein = nutrient;
-                }
-                else if (nutrient.name == "vitaminC") {
+                } else if (nutrient.name == "vitaminC") {
                     newNutrients.vitaminC = nutrient;
-                }
-                else if (nutrient.name == "Vitamin D") {
+                } else if (nutrient.name == "vitaminD") {
                     newNutrients.vitaminD = nutrient;
-                }
-                else if (nutrient.name == "Iron") {
+                } else if (nutrient.name == "iron") {
                     newNutrients.iron = nutrient;
-                }
-                else if (nutrient.name == "Calcium") {
+                } else if (nutrient.name == "calcium") {
                     newNutrients.calcium = nutrient;
-                }
-                else if (nutrient.name == "Potassium") {
+                } else if (nutrient.name == "potassium") {
                     newNutrients.potassium = nutrient;
-                }
-                else if (nutrient.name == "phosphorus") {
+                } else if (nutrient.name == "phosphorus") {
                     newNutrients.phosphorus = nutrient;
-                }
-                else {
+                } else {
                     continue;
                 }
+                cout << "Hi" << endl;
+                RBT.search(element.first)->nutrients = newNutrients;
             }
-            NutritionFacts nf;
-            nf.nutrients = newNutrients;
-            RBT[element.first].nutrition = nf;
         }
     }
 
-    void testFunction() {
+    void testFunction(FoodDatabase<FoodItem>& db) {
         parseFoodCSV();
         parseBrandedFoodCSV();
         parseNutrientID();
         parseFoodNutrients();
         createNutrients();
-        for(auto& element : RBT) {
-            cout << "Food Name: " << element.second.name << ", Protein: " << element.second.nutrition.nutrients.protein.amount << ", Daily Value: " << element.second.nutrition.nutrients.protein.dailyValue << "%" << endl;
-        }
+
+
+        db.setRBT(RBT);
+        db.getRBT().levelOrderTraversal();
     }
-
-
 };
 
 

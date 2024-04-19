@@ -10,21 +10,21 @@ using namespace std;
 template<typename T>
 class FoodDatabase {
 private:
-    RedBlackTree<int, T> foodItemsById; // Assuming our ID is int for now, will need to adjust this If we decide to use string
+    RedBlackTree<int, T> foodItems; // Assuming our ID is int for now, will need to adjust this If we decide to use string
     RedBlackTree<string, vector<T>> foodItemsByDescription;
     vector<T> allItems;  // Maintained as a simple list
 
 public:
     // Add a new item
     void addItem(const string& id, const string& description, const T& item) {
-        foodItemsById.insert(id, item);
+        foodItems.insert(id, item);
         foodItemsByDescription[description].push_back(item);
         allItems.push_back(item);
     }
 
     // Get an item by ID using the RedBlackTree
     T* getItemById(const string& id) {
-        return foodItemsById.search(id);  // make sure search returns a pointer to T
+        return foodItems.search(id);  // make sure search returns a pointer to T
     }
 
     // Get items by description using the map
@@ -57,9 +57,17 @@ public:
 
     // a more complex function that uses the RedBlackTree's ordered properties
     void displaySortedItems() {
-        vector<T> values = foodItemsById.getAllValues();  // TO DO: RedBlackTree has this method ?? Test it
+        vector<T> values = foodItems.getAllValues();  // TO DO: RedBlackTree has this method ?? Test it
         for (const T& item : values) {
             cout << item << endl;  // TO DO: operator<< need to be defined for T
         }
+    }
+
+    void setRBT(RedBlackTree<int, T>& RBT) {
+        foodItems = RBT;
+    }
+
+    RedBlackTree<int, T> getRBT() {
+        return foodItems;
     }
 };

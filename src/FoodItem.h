@@ -1,6 +1,7 @@
 #pragma once
-#include "NutritionFacts.h" 
-#include "RBT.h"
+#include "Nutrient.h"
+#include "Nutrients.h"
+#include "RedBlackTree.h"
 
 class FoodItem {
 public:
@@ -10,22 +11,24 @@ public:
 
     int selectedQuantity;
     string selectedWeight;
+    string servingUnit;
+    string servingSize;
+
+    Nutrients nutrients;
 
 
-    NutritionFacts nutrition;
-
-
-    std::map<std::string, double> nutrients;
     map<string, pair<double, string>> servings;  // Key is serving description, value is weight and description
 
     FoodItem() {id = 0; name = "NULL"; description = "NULL"; selectedQuantity = 0; selectedWeight = "NULL";}
 
-    FoodItem(int id, string description, const NutritionFacts& nutrition)
-        : id(id), description(description), nutrition(nutrition) {}
+    FoodItem(int id, string description, Nutrients  nutrients)
+        : id(id), description(description), nutrients(nutrients) {}
 
-    void addNutrient(const std::string& nutrientCode, double amount) {
-        nutrients[nutrientCode] = amount;
+        /** Not sure that we need this function, can possibly scrap this
+    void addNutrient(Nutrient& nutrient) {
+
     }
+         **/
     void setSelectedQuantity(int quantity) {
         selectedQuantity = quantity;
     }
