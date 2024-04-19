@@ -12,7 +12,7 @@ using namespace std;
 /* This is a very general idea of a data parser that we could use for csv files */
 class DataParser {
 private:
-    RedBlackTree<int, FoodItem> RBT;
+    unordered_map<int, FoodItem> RBT;
     unordered_map<int, string> nutrientIDM;
     unordered_map<int, vector<Nutrient>> nutrientPF;
     unordered_map<int, Nutrients>nutrientsPF;
@@ -21,8 +21,38 @@ private:
 
 public:
 
-    /* parseFoodCSV will be the first FUNCTION CALLED FOR PARSING EACH TIME */
     void parseFoodCSV() {
+        currFile.open("../db/food.csv");
+        if(!currFile.is_open()) {
+            std::cout << "Error opening food.csv" << std::endl;
+            std::exit(1);
+        }
+
+        std::string line;
+        int count = 0;
+        while(getline(currFile, line) && (count < 200000)) {
+            std::stringstream ss(line);
+            std::string id, data_type, name, food_cat_id, publ_date, market, trade, mic_dat;
+            getline(ss, id, ','); getline(ss, data_type, ','); getline(ss, name, ','); getline(ss, food_cat_id, ','); getline(ss, publ_date, ',');
+            getline(ss, market, ','); getline(ss, trade, ','); getline(ss, mic_dat, ',');
+
+            id.erase(remove(id.begin(), id.end(), '"'), id.end());
+            name.erase(remove(name.begin(), name.end(), '"'), name.end());
+
+
+            if(count > 0) {
+                FoodItem item;
+                item.id = stoi(id);
+                item.name = name;
+                RBT[stoi(id)] = item;
+            }
+            ++count;
+        }
+        currFile.close();
+    }
+
+    /* parseFoodCSV will be the first FUNCTION CALLED FOR PARSING EACH TIME */
+    void parseBrandedFoodCSV() {
         currFile.open("../db/branded_food.csv");
         if(!currFile.is_open()) {
             cout << "Error opening food.csv" << endl;
@@ -42,17 +72,13 @@ public:
             getline(ss, tC, ',');getline(ss, sD, ',');
 
 
-            id.erase(remove(id.begin(), id.end(), '"'), id.end());
             description.erase(remove(description.begin(), description.end(), '"'), description.end());
-            name.erase(remove(name.begin(), name.end(), '"'), name.end());
+            id.erase(remove(id.begin(), id.end(), '"'), id.end());
 
 
             try {
-                FoodItem item;
-                item.id = stoi(id);
-                item.name = name;
-                item.description = description;
-                RBT.insert(stoi(id), item);
+
+                RBT[stoi(id)].description = description;
             } catch (...) {
                 cout << "Error converting id to integer: " << id << endl;               
                 continue;
@@ -93,28 +119,36 @@ public:
     }
 
     void parseFoodNutrients() {
-        currFile.open("../db/food_attribute.csv");
-        if(!currFile.is_open()) {
+        currFile.open("../db/food_nutrient.csv");
+        if (!currFile.is_open()) {
             cout << "Error opening file" << endl;
             exit(1);
         }
 
         string line;
         int count = 0;
-        while(getline(currFile, line) && (count < 200000)) {
-            stringstream ss;
-            string fdcID, nutrientID, amount, dP, derV, min, max, median, loq, footnote, minYear, percDV;
-            getline(ss, fdcID, ',');getline(ss, nutrientID, ',');getline(ss, amount, ',');
-            getline(ss, dP, ',');getline(ss, derV, ',');getline(ss, min, ',');
-            getline(ss, max, ',');getline(ss, median, ',');getline(ss, loq, ',');
-            getline(ss, footnote, ',');getline(ss, minYear, ',');getline(ss, percDV, ',');
+        while (getline(currFile, line) && (count < 200000)) {
+            stringstream ss(line);
+            string rID, fdcID, nutrientID, amount, dP, derV, min, max, median, loq, footnote, minYear, percDV;
+            getline(ss, rID, ',');getline(ss, fdcID, ',');getline(ss, nutrientID, ',');
+            getline(ss, amount, ',');getline(ss, dP, ',');getline(ss, derV, ',');
+            getline(ss, min, ',');getline(ss, max, ',');getline(ss, median, ',');
+            getline(ss, loq, ',');getline(ss, footnote, ',');getline(ss, minYear, ',');
+            getline(ss, percDV, ',');
 
+
+            // Remove quotes from the parsed strings
             fdcID.erase(remove(fdcID.begin(), fdcID.end(), '"'), fdcID.end());
             nutrientID.erase(remove(nutrientID.begin(), nutrientID.end(), '"'), nutrientID.end());
             amount.erase(remove(amount.begin(), amount.end(), '"'), amount.end());
+            percDV.erase(remove(percDV.begin(), percDV.end(), '"'), percDV.end());
 
             try {
-
+                // Assuming nutrientIDMap is a map
+                if (percDV == "") {
+                    percDV = "0.0";
+                }
+                cout << "FDIC: " << RBT[stoi(fdcID)].name << ", NUTRIENT:  " << nutrientIDM[stoi(nutrientID)] << ", Amount: " << amount << endl;
                 Nutrient nutrient(nutrientIDM[stoi(nutrientID)], stod(amount), stoi(percDV));
                 nutrientPF[stoi(fdcID)].push_back(nutrient);
             } catch (...) {
@@ -143,50 +177,63 @@ public:
                 else if (nutrient.name == "transFat") {
                     newNutrients.transFat = nutrient;
                 }
-                else if (nutrient.name == "cholesterol") {
+                else if (nutrient.name == "Cholesterol") {
                     newNutrients.cholesterol = nutrient;
                 }
-                else if (nutrient.name == "sodium") {
+                else if (nutrient.name == "Sodium") {
                     newNutrients.sodium = nutrient;
                 }
-                else if (nutrient.name == "totalCarbohydrates") {
+                else if (nutrient.name == "Carbohydrates") {
                     newNutrients.totalCarbohydrates = nutrient;
                 }
-                else if (nutrient.name == "fiber") {
+                else if (nutrient.name == "Fiber") {
                     newNutrients.fiber = nutrient;
                 }
-                else if (nutrient.name == "sugar") {
+                else if (nutrient.name == "Sugars") {
                     newNutrients.sugar = nutrient;
                 }
                 else if (nutrient.name == "addedSugar") {
                     newNutrients.addedSugar = nutrient;
                 }
-                else if (nutrient.name == "protein") {
+                else if (nutrient.name == "Protein") {
                     newNutrients.protein = nutrient;
                 }
                 else if (nutrient.name == "vitaminC") {
                     newNutrients.vitaminC = nutrient;
                 }
-                else if (nutrient.name == "vitaminD") {
+                else if (nutrient.name == "Vitamin D") {
                     newNutrients.vitaminD = nutrient;
                 }
-                else if (nutrient.name == "iron") {
+                else if (nutrient.name == "Iron") {
                     newNutrients.iron = nutrient;
                 }
-                else if (nutrient.name == "calcium") {
+                else if (nutrient.name == "Calcium") {
                     newNutrients.calcium = nutrient;
                 }
-                else if (nutrient.name == "potassium") {
+                else if (nutrient.name == "Potassium") {
                     newNutrients.potassium = nutrient;
                 }
                 else if (nutrient.name == "phosphorus") {
                     newNutrients.phosphorus = nutrient;
                 }
                 else {
+                    continue;
                 }
             }
             NutritionFacts nf;
-            RBT.search(element.first)->nutrition = nf;
+            nf.nutrients = newNutrients;
+            RBT[element.first].nutrition = nf;
+        }
+    }
+
+    void testFunction() {
+        parseFoodCSV();
+        parseBrandedFoodCSV();
+        parseNutrientID();
+        parseFoodNutrients();
+        createNutrients();
+        for(auto& element : RBT) {
+            cout << "Food Name: " << element.second.name << ", Protein: " << element.second.nutrition.nutrients.protein.amount << ", Daily Value: " << element.second.nutrition.nutrients.protein.dailyValue << "%" << endl;
         }
     }
 
