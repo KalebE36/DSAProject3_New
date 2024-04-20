@@ -13,7 +13,7 @@ using namespace std;
 class DataParser {
 private:
     RedBlackTree<int, FoodItem> RBT;
-    unordered_map<int, string> nutrientIDM;
+    unordered_map<int, pair<string, string>> nutrientIDM;
     unordered_map<int, vector<Nutrient>> nutrientPF;
     fstream currFile;
 
@@ -110,7 +110,7 @@ public:
             int id_num;
             try {
                 id_num = stoi(id);
-                nutrientIDM[id_num] = name;
+                nutrientIDM[id_num] = { name, unit_name };
             }
             catch (...) {
                 continue; // Skip this row if id cannot be converted to integer
@@ -151,7 +151,10 @@ public:
                     if (percDV == "") {
                         percDV = "0.0";
                     }
-                    Nutrient nutrient(nutrientIDM[stoi(nutrientID)], stod(amount), stoi(percDV));
+                    pair<string, string> nutrientInfo = nutrientIDM[stoi(nutrientID)];
+                    string nutrientName = nutrientInfo.first;
+                    string nutrientUnit = nutrientInfo.second;
+                    Nutrient nutrient(nutrientName, nutrientUnit, stod(amount), stoi(percDV));
                     nutrientPF[stoi(fdcID)].push_back(nutrient);
                 }
             }

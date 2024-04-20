@@ -1,6 +1,5 @@
 #include "DataParser.h"
 #include <iostream>
-#include "menu.h"
 #include <vector>
 #include <string>
 #include "FoodDatabase.h"
@@ -32,9 +31,10 @@ void SearchNutritionFacts(FoodDatabase<FoodItem>& db) {
         cout << "Name: " << db.getRBT().search(id)->name << ", Description: " << db.getRBT().search(id)->description << endl;
         // Printing each element of the sorted nutrients vector
         for (const Nutrient& nutrient : sortedNutrients) {
-            cout << nutrient.name << ": " << nutrient.amount << " " << db.getRBT().search(id)->servingUnit << ", ";
+            cout << nutrient.name << ": " << nutrient.amount << " " << nutrient.unit_name << ", ";
         }
-    } catch (...) {
+    }
+    catch (...) {
         cout << "Item Does Not Exist" << endl;
     }
 
@@ -49,13 +49,13 @@ void SearchNutritionFacts(FoodDatabase<FoodItem>& db) {
 
 
 
-int main () {
+int main() {
     FoodDatabase<FoodItem> db;
     DataParser parser;
     parser.loadFiles(db);
 
-     // Populate FoodItems from food.csv
-        int selection = 0;
+    // Populate FoodItems from food.csv
+    int selection = 0;
 
     do {
         DisplayMainMenu();
@@ -69,7 +69,7 @@ int main () {
             //NutritionFactsComparison(db);
             break;
         case 4:
-           // RatioAnalysis();
+            // RatioAnalysis();
             break;
         case 5:
             //RecipeNutritionFacts();
