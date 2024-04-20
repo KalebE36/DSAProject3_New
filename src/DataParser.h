@@ -90,7 +90,7 @@ public:
     }
 
     void parseNutrientID() {
-        currFile.open("../db/nutrient.csv");
+        ifstream currFile("../db/nutrient.csv");
         if (!currFile.is_open()) {
             cout << "Error opening file" << endl;
             exit(1);
@@ -100,12 +100,19 @@ public:
         while (getline(currFile, line)) {
             stringstream ss(line);
             string id, name, unit_name, nutrient_nbr_str, rank_str;
-            getline(ss, id, ','); getline(ss, name, ','); getline(ss, unit_name, ',');
-            getline(ss, nutrient_nbr_str, ','); getline(ss, rank_str, ',');
+            getline(ss, id, '"');
+            getline(ss, id, '"');
+            getline(ss, name, '"');
+            getline(ss, name, '"');
+            getline(ss, unit_name, '"');
+            getline(ss, unit_name, '"');
+            getline(ss, nutrient_nbr_str, '"');
+            getline(ss, nutrient_nbr_str, '"');
+            getline(ss, rank_str, '"');
+            getline(ss, rank_str, '"');
 
-            name.erase(remove(name.begin(), name.end(), '"'), name.end());
-            id.erase(remove(id.begin(), id.end(), '"'), id.end());
-            unit_name.erase(remove(unit_name.begin(), unit_name.end(), '"'), unit_name.end());
+            // Remove quotes if any from the fields
+       
 
             int id_num;
             try {
@@ -113,9 +120,8 @@ public:
                 nutrientIDM[id_num] = { name, unit_name };
             }
             catch (...) {
-                continue; // Skip this row if id cannot be converted to integer
+                continue; // Skip this row if id cannot be converted to an integer
             }
-
         }
         currFile.close();
     }
@@ -177,49 +183,49 @@ public:
                 else if (nutrient.name == "Total lipid (fat)") {
                     newNutrients.totalFat = nutrient;
                 }
-                else if (nutrient.name == "Saturated Fat") {
+                else if (nutrient.name == "Fatty acids, total saturated") {
                     newNutrients.saturatedFat = nutrient;
                 }
-                else if (nutrient.name == "Trans Fat") {
+                else if (nutrient.name == "Fatty acids, total trans") {
                     newNutrients.transFat = nutrient;
                 }
                 else if (nutrient.name == "Cholesterol") {
                     newNutrients.cholesterol = nutrient;
                 }
-                else if (nutrient.name == "Sodium") {
+                else if (nutrient.name == "Sodium, Na") {
                     newNutrients.sodium = nutrient;
                 }
-                else if (nutrient.name == "Carbohydrates") {
+                else if (nutrient.name == "Carbohydrate, by difference") {
                     newNutrients.totalCarbohydrates = nutrient;
                 }
-                else if (nutrient.name == "Fiber") {
+                else if (nutrient.name == "Fiber, total dietary") {
                     newNutrients.fiber = nutrient;
                 }
-                else if (nutrient.name == "Sugar") {
+                else if (nutrient.name == "Sugars, Total") {
                     newNutrients.sugar = nutrient;
                 }
-                else if (nutrient.name == "addedSugar") {
+                else if (nutrient.name == "Sugars, added") {
                     newNutrients.addedSugar = nutrient;
                 }
                 else if (nutrient.name == "Protein") {
                     newNutrients.protein = nutrient;
                 }
-                else if (nutrient.name == "vitaminC") {
+                else if (nutrient.name == "vitamin C") {
                     newNutrients.vitaminC = nutrient;
                 }
-                else if (nutrient.name == "Vitamin D") {
+                else if (nutrient.name == "Vitamin D (D2 + D3), International Units") {
                     newNutrients.vitaminD = nutrient;
                 }
-                else if (nutrient.name == "Iron") {
+                else if (nutrient.name == "Iron, Fe") {
                     newNutrients.iron = nutrient;
                 }
-                else if (nutrient.name == "Calcium") {
+                else if (nutrient.name == "Calcium, Ca") {
                     newNutrients.calcium = nutrient;
                 }
-                else if (nutrient.name == "Potassium") {
+                else if (nutrient.name == "Potassium, K") {
                     newNutrients.potassium = nutrient;
                 }
-                else if (nutrient.name == "Phosphorus") {
+                else if (nutrient.name == "Phosphorus, P") {
                     newNutrients.phosphorus = nutrient;
                 }
                 else {
