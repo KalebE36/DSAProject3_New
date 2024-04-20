@@ -24,11 +24,10 @@ public:
 
 
 
-    vector<T> rankByNutrient(const string& nutrient, bool highest = true, size_t limit = 100) {
 
-    }
 
     // a more complex function that uses the RedBlackTree's ordered properties
+    /* What is even the purpose of this function */
     void displaySortedItems() {
         vector<T> values = foodItems.getAllValues();  // TO DO: RedBlackTree has this method ?? Test it
         for (const T& item : values) {
