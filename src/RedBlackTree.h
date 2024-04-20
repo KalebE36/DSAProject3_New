@@ -417,7 +417,7 @@ void RedBlackTree<Key, Value>::levelOrderHelper(Node* node) const {
     while (!q.empty()) {
         Node* current = q.front();                          // Get the front node of the queue
         q.pop();                                            // Remove the front node from the queue
-        std::cout << "Key: " << current->key << ", Name: " << current->value.name << ", Description: " << current->value.description << std::endl;
+        std::cout << "Key: " << current->key << ", Name: " << current->value.name << ", Description: "<< current->value.description <<std::endl;
 
         // Enqueue left and right children if they exist
         if (current->left != nullptr) q.push(current->left);
@@ -625,3 +625,4 @@ void RedBlackTree<Key, Value>::getAllValuesHelper(Node* currentNode, vector<Valu
 
 
 #endif // REDBLACKTREE_H
+

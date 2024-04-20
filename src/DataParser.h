@@ -6,7 +6,6 @@
 #include "FoodItem.h"
 #include "Nutrient.h"
 #include "FoodDatabase.h"
-#include "NutritionFacts.h"
 #include "RedBlackTree.h"
 
 using namespace std;
@@ -59,31 +58,30 @@ public:
 
         string line;
         int count = 0;
-            while (getline(currFile, line) && (count < 200001)) {
-                stringstream ss(line);
-                string id, branOwner, branName ,subBrand, gtin, description, notS,servSize, servSizeUnit, hhServing, bfoodCat, source, packageWeight, mD, aD, market, dD, pSC, tC, sD;
-                getline(ss, id, '"');getline(ss, id, '"');getline(ss, branOwner, '"');getline(ss, branOwner, '"');getline(ss, branName, '"');
-                getline(ss, branName, '"');getline(ss, subBrand, '"');getline(ss, subBrand, '"');getline(ss, gtin, '"');getline(ss, gtin, '"');
-                getline(ss, description, '"');getline(ss, description, '"');getline(ss, notS, '"');getline(ss, notS, '"');getline(ss, servSize, '"');getline(ss, servSize, '"');
-                getline(ss, servSizeUnit, '"');getline(ss, servSizeUnit, '"');getline(ss, hhServing, '"');getline(ss, hhServing, '"');getline(ss, bfoodCat, '"');
-                getline(ss, bfoodCat, '"');getline(ss, source, '"');getline(ss, source, '"');getline(ss, packageWeight, '"');getline(ss, packageWeight, '"');
-                getline(ss, mD, '"');getline(ss, mD, '"');getline(ss, aD, '"');getline(ss, aD, '"');getline(ss, market, '"');
-                getline(ss, market, '"');getline(ss, dD, '"');getline(ss, dD, '"');getline(ss, pSC, '"');getline(ss, pSC, '"');
-                getline(ss, tC, '"');getline(ss, tC, '"');getline(ss, sD, '"');getline(ss, sD, '"');
+        while (getline(currFile, line) && (count < 200001)) {
+            stringstream ss(line);
+            string id, branOwner, branName, subBrand, gtin, description, notS, servSize, servSizeUnit, hhServing, bfoodCat, source, packageWeight, mD, aD, market, dD, pSC, tC, sD;
+            getline(ss, id, '"'); getline(ss, id, '"'); getline(ss, branOwner, '"'); getline(ss, branOwner, '"'); getline(ss, branName, '"');
+            getline(ss, branName, '"'); getline(ss, subBrand, '"'); getline(ss, subBrand, '"'); getline(ss, gtin, '"'); getline(ss, gtin, '"');
+            getline(ss, description, '"'); getline(ss, description, '"'); getline(ss, notS, '"'); getline(ss, notS, '"'); getline(ss, servSize, '"'); getline(ss, servSize, '"');
+            getline(ss, servSizeUnit, '"'); getline(ss, servSizeUnit, '"'); getline(ss, hhServing, '"'); getline(ss, hhServing, '"'); getline(ss, bfoodCat, '"');
+            getline(ss, bfoodCat, '"'); getline(ss, source, '"'); getline(ss, source, '"'); getline(ss, packageWeight, '"'); getline(ss, packageWeight, '"');
+            getline(ss, mD, '"'); getline(ss, mD, '"'); getline(ss, aD, '"'); getline(ss, aD, '"'); getline(ss, market, '"');
+            getline(ss, market, '"'); getline(ss, dD, '"'); getline(ss, dD, '"'); getline(ss, pSC, '"'); getline(ss, pSC, '"');
+            getline(ss, tC, '"'); getline(ss, tC, '"'); getline(ss, sD, '"'); getline(ss, sD, '"');
 
-           //description.erase(remove(description.begin(), description.end(), '"'), description.end());
-           id.erase(remove(id.begin(), id.end(), '"'), id.end());
+            //description.erase(remove(description.begin(), description.end(), '"'), description.end());
+            id.erase(remove(id.begin(), id.end(), '"'), id.end());
 
 
             try {
-                if(count < 200000){
+                if (count < 200000) {
                     RBT.search(stoi(id))->description = description;
                     RBT.search(stoi(id))->servingUnit = servSizeUnit;
                     RBT.search(stoi(id))->servingSize = servSize;
                 }
             }
             catch (...) {
-                cout << "Error converting id to integer: " << id << endl;
                 continue;
             }
             ++count;
@@ -107,6 +105,7 @@ public:
 
             name.erase(remove(name.begin(), name.end(), '"'), name.end());
             id.erase(remove(id.begin(), id.end(), '"'), id.end());
+            unit_name.erase(remove(unit_name.begin(), unit_name.end(), '"'), unit_name.end());
 
             int id_num;
             try {
@@ -114,7 +113,6 @@ public:
                 nutrientIDM[id_num] = name;
             }
             catch (...) {
-                cout << "Error converting id to integer: " << id << endl;
                 continue; // Skip this row if id cannot be converted to integer
             }
 
@@ -156,7 +154,6 @@ public:
                 nutrientPF[stoi(fdcID)].push_back(nutrient);
             }
             catch (...) {
-                cout << "Error converting something to integer" << endl;
                 continue; // Skip this row if id cannot be converted to integer
             }
 
@@ -166,53 +163,69 @@ public:
     }
 
     void createNutrients() {
-        for (auto &element: nutrientPF) {
+        for (auto& element : nutrientPF) {
             Nutrients newNutrients;
-            for (auto &nutrient: element.second) {
-                if (nutrient.name == "calories") {
+            for (auto& nutrient : element.second) {
+                if (nutrient.name == "Calories") {
                     newNutrients.calories = nutrient;
-                } else if (nutrient.name == "totalFat") {
+                }
+                else if (nutrient.name == "Fat") {
                     newNutrients.totalFat = nutrient;
-                } else if (nutrient.name == "saturatedFat") {
+                }
+                else if (nutrient.name == "Saturated Fat") {
                     newNutrients.saturatedFat = nutrient;
-                } else if (nutrient.name == "transFat") {
+                }
+                else if (nutrient.name == "Trans Fat") {
                     newNutrients.transFat = nutrient;
-                } else if (nutrient.name == "cholesterol") {
+                }
+                else if (nutrient.name == "Cholesterol") {
                     newNutrients.cholesterol = nutrient;
-                } else if (nutrient.name == "sodium") {
+                }
+                else if (nutrient.name == "Sodium") {
                     newNutrients.sodium = nutrient;
-                } else if (nutrient.name == "totalCarbohydrates") {
+                }
+                else if (nutrient.name == "Carbohydrates") {
                     newNutrients.totalCarbohydrates = nutrient;
-                } else if (nutrient.name == "fiber") {
+                }
+                else if (nutrient.name == "Fiber") {
                     newNutrients.fiber = nutrient;
-                } else if (nutrient.name == "sugar") {
+                }
+                else if (nutrient.name == "Sugar") {
                     newNutrients.sugar = nutrient;
-                } else if (nutrient.name == "addedSugar") {
+                }
+                else if (nutrient.name == "addedSugar") {
                     newNutrients.addedSugar = nutrient;
-                } else if (nutrient.name == "protein") {
+                }
+                else if (nutrient.name == "Protein") {
                     newNutrients.protein = nutrient;
-                } else if (nutrient.name == "vitaminC") {
+                }
+                else if (nutrient.name == "vitaminC") {
                     newNutrients.vitaminC = nutrient;
-                } else if (nutrient.name == "vitaminD") {
+                }
+                else if (nutrient.name == "Vitamin D") {
                     newNutrients.vitaminD = nutrient;
-                } else if (nutrient.name == "iron") {
+                }
+                else if (nutrient.name == "Iron") {
                     newNutrients.iron = nutrient;
-                } else if (nutrient.name == "calcium") {
+                }
+                else if (nutrient.name == "Calcium") {
                     newNutrients.calcium = nutrient;
-                } else if (nutrient.name == "potassium") {
+                }
+                else if (nutrient.name == "Potassium") {
                     newNutrients.potassium = nutrient;
-                } else if (nutrient.name == "phosphorus") {
+                }
+                else if (nutrient.name == "Phosphorus") {
                     newNutrients.phosphorus = nutrient;
-                } else {
+                }
+                else {
                     continue;
                 }
-                cout << "Hi" << endl;
                 RBT.search(element.first)->nutrients = newNutrients;
             }
         }
     }
 
-    void testFunction(FoodDatabase<FoodItem>& db) {
+    void loadFiles(FoodDatabase<FoodItem>& db) {
         parseFoodCSV();
         parseBrandedFoodCSV();
         parseNutrientID();
@@ -221,7 +234,11 @@ public:
 
 
         db.setRBT(RBT);
-        db.getRBT().levelOrderTraversal();
+
+        // Printing each element of the sorted nutrients vector
+       // for (const Nutrient& nutrient : sortedNutrients) {
+       //     cout << nutrient.name << ": " << nutrient.amount << endl;
+        //}
     }
 };
 

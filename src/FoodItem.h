@@ -17,8 +17,6 @@ public:
     Nutrients nutrients;
 
 
-    map<string, pair<double, string>> servings;  // Key is serving description, value is weight and description
-
     FoodItem() {id = 0; name = "NULL"; description = "NULL"; selectedQuantity = 0; selectedWeight = "NULL";}
 
     FoodItem(int id, string description, Nutrients  nutrients)
@@ -33,11 +31,5 @@ public:
         selectedQuantity = quantity;
     }
 
-    void setSelectedWeight(const string& weight) {
-        selectedWeight = weight;
-    }
 
-    void addServing(const string& description, double weight) {
-        servings[description] = make_pair(weight, description);
-    }
 };
