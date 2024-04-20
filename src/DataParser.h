@@ -138,7 +138,6 @@ public:
             getline(ss, loq, ','); getline(ss, footnote, ','); getline(ss, minYear, ',');
             getline(ss, percDV, ',');
 
-
             // Remove quotes from the parsed strings
             fdcID.erase(remove(fdcID.begin(), fdcID.end(), '"'), fdcID.end());
             nutrientID.erase(remove(nutrientID.begin(), nutrientID.end(), '"'), nutrientID.end());
@@ -146,15 +145,18 @@ public:
             percDV.erase(remove(percDV.begin(), percDV.end(), '"'), percDV.end());
 
             try {
-                // Assuming nutrientIDMap is a map
-                if (percDV == "") {
-                    percDV = "0.0";
+                // Check if fdcID exists in the RBT
+                if (RBT.search(stoi(fdcID))) {
+                    // Assuming nutrientIDM is a map containing nutrient names
+                    if (percDV == "") {
+                        percDV = "0.0";
+                    }
+                    Nutrient nutrient(nutrientIDM[stoi(nutrientID)], stod(amount), stoi(percDV));
+                    nutrientPF[stoi(fdcID)].push_back(nutrient);
                 }
-                Nutrient nutrient(nutrientIDM[stoi(nutrientID)], stod(amount), stoi(percDV));
-                nutrientPF[stoi(fdcID)].push_back(nutrient);
             }
             catch (...) {
-                continue; // Skip this row if id cannot be converted to integer
+                continue; // Skip this row if id cannot be converted to integer or if it's not found in RBT
             }
 
             ++count;
@@ -166,10 +168,10 @@ public:
         for (auto& element : nutrientPF) {
             Nutrients newNutrients;
             for (auto& nutrient : element.second) {
-                if (nutrient.name == "Calories") {
+                if (nutrient.name == "Energy") {
                     newNutrients.calories = nutrient;
                 }
-                else if (nutrient.name == "Fat") {
+                else if (nutrient.name == "Total lipid (fat)") {
                     newNutrients.totalFat = nutrient;
                 }
                 else if (nutrient.name == "Saturated Fat") {
