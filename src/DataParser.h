@@ -7,12 +7,14 @@
 #include "Nutrient.h"
 #include "FoodDatabase.h"
 #include "RedBlackTree.h"
+#include "HashTable.h"
 
 using namespace std;
 /* This is a very general idea of a data parser that we could use for csv files */
 class DataParser {
 private:
     RedBlackTree<int, FoodItem> RBT;
+    HashTable<int, FoodItem> hashTable;
     unordered_map<int, pair<string, string>> nutrientIDM;
     unordered_map<int, vector<Nutrient>> nutrientPF;
     fstream currFile;
@@ -43,6 +45,7 @@ public:
                 item.id = stoi(id);
                 item.name = name;
                 RBT.insert(item.id, item); // Insert into Red-Black Tree
+                hashTable.insert(item.id, item);
             }
             ++count;
         }
@@ -152,7 +155,7 @@ public:
 
             try {
                 // Check if fdcID exists in the RBT
-                if (RBT.search(stoi(fdcID))) {
+                if (RBT.search(stoi(fdcID)) && hashTable.search(stoi(fdcID))) {
                     // Assuming nutrientIDM is a map containing nutrient names
                     if (percDV == "") {
                         percDV = "0.0";
@@ -232,6 +235,7 @@ public:
                     continue;
                 }
                 RBT.search(element.first)->nutrients = newNutrients;
+                hashTable.search(element.first)->nutrients = newNutrients;
             }
         }
     }
@@ -245,6 +249,7 @@ public:
 
 
         db.setRBT(RBT);
+        db.setHashTable(hashTable);
 
         // Printing each element of the sorted nutrients vector
        // for (const Nutrient& nutrient : sortedNutrients) {

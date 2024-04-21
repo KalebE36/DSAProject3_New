@@ -4,6 +4,7 @@
 #include <map>
 #include <algorithm> // For std::sort in rankByNutrient()
 #include "RedBlackTree.h"
+#include "HashTable.h"
 #include <chrono>
 
 using namespace std;
@@ -13,6 +14,7 @@ template<typename T>
 class FoodDatabase {
 private:
     RedBlackTree<int, T> foodItems; // Assuming our ID is int for now, will need to adjust this If we decide to use string
+    HashTable<int, T> foodItemsH;
 
 public:
     // Add a new item
@@ -40,9 +42,30 @@ public:
         cin >> input;
         try {
             id = stoi(input);
-        } catch (...) {
+        }
+        catch (...) {
             cout << "Not A Valid Integer" << endl;
             exit(1);
+        }
+
+        try {
+            auto startHash = chrono::high_resolution_clock::now();
+            vector<Nutrient> sortedNutrientsH = db.getHashTable().search(id)->nutrients.sortNutrientVec();
+            auto endHash = chrono::high_resolution_clock::now();
+            auto durationSHash = chrono::duration_cast<chrono::seconds>(endHash - startHash);
+            auto durationMHash = chrono::duration_cast<chrono::milliseconds>(endHash - startHash);
+
+            cout << "Time taken for hashtable: " << durationSHash.count() << "." << durationMHash.count() << " seconds" << endl;
+            cout << "Name: " << db.getHashTable().search(id)->name << ", Description: " << db.getHashTable().search(id)->description << endl;
+            
+            // Printing each element of the sorted nutrients vector
+            for (const Nutrient& nutrient : sortedNutrientsH) {
+                cout << nutrient.name << ": " << nutrient.amount << " " << nutrient.unit_name << ", " << endl;
+            }
+        }
+        catch (...) {
+            // If not found in hashtable, try searching in the Red-Black Tree
+            cout << "Item Does Not Exist" << endl;
         }
         try {
             auto startRBT = chrono::high_resolution_clock::now();
@@ -51,7 +74,7 @@ public:
             auto durationSRBT = chrono::duration_cast<chrono::seconds>(endRBT - startRBT);
             auto durationMRBT = chrono::duration_cast<chrono::milliseconds>(endRBT - startRBT);
 
-            std::cout << "Time taken for RBT: " << durationSRBT.count()  << "." << durationMRBT.count() << " seconds" << std::endl;
+            cout << "Time taken for RBT: " << durationSRBT.count() << "." << durationMRBT.count() << " seconds" << endl;
             cout << "Name: " << db.getRBT().search(id)->name << ", Description: " << db.getRBT().search(id)->description << endl;
 
             // Printing each element of the sorted nutrients vector
@@ -73,7 +96,8 @@ public:
         try {
             id1 = stoi(input1);
             id2 = stoi(input2);
-        } catch (...) {
+        }
+        catch (...) {
             cout << "Not Valid Integers" << endl;
             exit(1);
         }
@@ -100,7 +124,6 @@ public:
 
     }
 
-
     // a more complex function that uses the RedBlackTree's ordered properties
     /* What is even the purpose of this function */
     void displaySortedItems() {
@@ -114,7 +137,16 @@ public:
         foodItems = RBT;
     }
 
+    void setHashTable(HashTable<int, T>& hashTable) {
+        foodItemsH = hashTable;
+    }
+
     RedBlackTree<int, T> getRBT() {
         return foodItems;
+    }
+
+
+    HashTable<int, T> getHashTable() {
+        return foodItemsH;
     }
 };
