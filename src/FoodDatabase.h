@@ -60,8 +60,9 @@ public:
             
             // Printing each element of the sorted nutrients vector
             for (const Nutrient& nutrient : sortedNutrientsH) {
-                cout << nutrient.name << ": " << nutrient.amount << " " << nutrient.unit_name << ", " << endl;
+                cout << nutrient.name << ": " << nutrient.amount << " " << nutrient.unit_name << ", ";
             }
+            cout << endl;
         }
         catch (...) {
             // If not found in hashtable, try searching in the Red-Black Tree
@@ -81,6 +82,7 @@ public:
             for (const Nutrient& nutrient : sortedNutrients) {
                 cout << nutrient.name << ": " << nutrient.amount << " " << nutrient.unit_name << ", ";
             }
+            cout << endl;
         }
         catch (...) {
             cout << "Item Does Not Exist" << endl;
@@ -101,6 +103,26 @@ public:
             cout << "Not Valid Integers" << endl;
             exit(1);
         }
+        try {
+            vector<Nutrient> sortedNutrients1H = db.getRBT().search(id1)->nutrients.sortNutrientVec();
+            vector<Nutrient> sortedNutrients2H = db.getRBT().search(id2)->nutrients.sortNutrientVec();
+
+            cout << "Name: " << db.getRBT().search(id1)->name << ", Description: " << db.getRBT().search(id1)->description << endl;
+            // Printing each element of the sorted nutrients vector
+            for (const Nutrient& nutrient : sortedNutrients1H) {
+                cout << nutrient.name << ": " << nutrient.amount << " " << nutrient.unit_name << ", ";
+            }
+            cout << endl;
+            cout << "Name: " << db.getRBT().search(id2)->name << ", Description: " << db.getRBT().search(id2)->description << endl;
+            // Printing each element of the sorted nutrients vector
+            for (const Nutrient& nutrient : sortedNutrients2H) {
+                cout << nutrient.name << ": " << nutrient.amount << " " << nutrient.unit_name << ", ";
+            }
+            cout << endl;
+        }
+        catch (...) {
+            cout << "Item Does Not Exist" << endl;
+        }
 
         try {
             vector<Nutrient> sortedNutrients1 = db.getRBT().search(id1)->nutrients.sortNutrientVec();
@@ -117,6 +139,7 @@ public:
             for (const Nutrient& nutrient : sortedNutrients2) {
                 cout << nutrient.name << ": " << nutrient.amount << " " << nutrient.unit_name << ", ";
             }
+            cout << endl;
         }
         catch (...) {
             cout << "Item Does Not Exist" << endl;
