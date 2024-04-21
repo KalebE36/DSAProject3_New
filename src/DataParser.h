@@ -37,14 +37,15 @@ public:
             getline(ss, id, ','); getline(ss, data_type, ','); getline(ss, name, ','); getline(ss, food_cat_id, ','); getline(ss, publ_date, ',');
             getline(ss, market, ','); getline(ss, trade, ','); getline(ss, mic_dat, ',');
 
-            id.erase(remove(id.begin(), id.end(), '"'), id.end());
-            name.erase(remove(name.begin(), name.end(), '"'), name.end());
+            // Remove quotes from fields
+            id = id.substr(1, id.size() - 2);
+            name = name.substr(1, name.size() - 2);
 
             if (count > 0) {
                 FoodItem item;
-                item.id = stoi(id);
-                item.name = name;
-                RBT.insert(item.id, item); // Insert into Red-Black Tree
+                item.id = std::stoi(id);
+                item.name = std::move(name); 
+                RBT.insert(item.id, item);
                 hashTable.insert(item.id, item);
             }
             ++count;
@@ -76,17 +77,20 @@ public:
             //description.erase(remove(description.begin(), description.end(), '"'), description.end());
             id.erase(remove(id.begin(), id.end(), '"'), id.end());
 
-
             try {
                 if (count < 200000) {
-                    RBT.search(stoi(id))->description = description;
-                    RBT.search(stoi(id))->servingUnit = servSizeUnit;
-                    RBT.search(stoi(id))->servingSize = servSize;
-                    hashTable.search(stoi(id))->description = description;
-                    hashTable.search(stoi(id))->servingUnit = description;
-                    hashTable.search(stoi(id))->servingSize = description;
+                    auto itemH = hashTable.search(std::stoi(id));
+                    auto item = RBT.search(std::stoi(id));
+                    if (itemH && item) {
+                        itemH->description = description;
+                        item->description = description;  
 
+                        itemH->servingUnit = std::move(servSizeUnit);
+                        itemH->servingSize = std::move(servSize);
 
+                        item->servingUnit = std::move(servSizeUnit);
+                        item->servingSize = std::move(servSize);
+                    }
                 }
             }
             catch (...) {
@@ -120,7 +124,7 @@ public:
             getline(ss, rank_str, '"');
 
             // Remove quotes if any from the fields
-       
+
 
             int id_num;
             try {
