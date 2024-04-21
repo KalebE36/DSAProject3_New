@@ -7,6 +7,7 @@
 #include <chrono>
 
 using namespace std;
+using namespace std::chrono;
 
 template<typename T>
 class FoodDatabase {
