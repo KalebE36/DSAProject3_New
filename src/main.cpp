@@ -12,7 +12,7 @@ void DisplayMainMenu() {
     cout << "Welcome to NutritiousDB - Your Personal Nutrition Guide\n";
     cout << "Please select an option:\n";
     cout << "1. Search Nutrition Facts\n";
-    cout << "2. Nutrition Facts Comparison\n";
+    cout << "2. Search NF Name\n";
     cout << "3. Nutrient Ranking Tool\n";
     //cout << "4. Optional-Potential Feature: Ratio Analysis Tool\n";
     //cout << "5. Optional-Potential Feature: Complete X+Y+Z Nutrient Calculator - Recipe \n";
@@ -51,7 +51,7 @@ int main() {
             db.SearchNutritionFactsID(db);
             break;
         case 2:
-            ;
+            db.SearchNutritionFactsName(db);
             break;
         case 3:
             db.NutritionFactsComparisonID(db);

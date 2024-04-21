@@ -31,6 +31,20 @@ public:
         cout << "Enter Name of Item: ";
         cin >> input;
 
+        try {
+            auto startRBT = chrono::high_resolution_clock::now();
+            vector<Nutrient> sortedNutrients = db.getRBT().searchByName(input)->nutrients.sortNutrientVec();
+            auto endRBT = chrono::high_resolution_clock::now();
+            auto durationSRBT = chrono::duration_cast<chrono::seconds>(endRBT - startRBT);
+            auto durationMRBT = chrono::duration_cast<chrono::milliseconds>(endRBT - startRBT);
+
+            cout << "Time taken for RBT: " << durationSRBT.count() << "." << durationMRBT.count() << " seconds" << endl;
+            for (const Nutrient& nutrient : sortedNutrients) {
+                cout << nutrient.name << ": " << nutrient.amount << " " << nutrient.unit_name << ", ";
+            }
+        } catch (...) {
+            cout << "Item does not exist" << endl;
+        }
 
     }
 

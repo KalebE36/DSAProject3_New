@@ -58,7 +58,8 @@ public:
     void preOrderTraversal() const;
     void postOrderTraversal() const;
     void levelOrderTraversal() const;
-    vector<Value> getAllValues() const;                     // Method to retrieve all values from the tree in sorted order
+    vector<Value> getAllValues() const;
+    Value* searchByName(const std::string& name) const; // Method to retrieve all values from the tree in sorted order
 
 
 private:
@@ -77,8 +78,28 @@ private:
     void postOrderHelper(Node* node) const;
     void levelOrderHelper(Node* node) const;
     void getAllValuesHelper(Node* node, vector<Value>& values) const;
+    Node* searchNodeByName(Node* current, const std::string& name) const;
 
 };
+
+template <typename Key, typename Value>
+typename RedBlackTree<Key, Value>::Node* RedBlackTree<Key, Value>::searchNodeByName(Node* current, const std::string& name) const {
+    cout << "HI" << endl;
+    if (current == nullptr || current->value.name == name) {
+        return current;
+    }
+    if (name < current->value.name) {
+        return searchNodeByName(current->left, name);
+    } else {
+        return searchNodeByName(current->right, name);
+    }
+}
+
+template <typename Key, typename Value>
+Value* RedBlackTree<Key, Value>::searchByName(const std::string& name) const {
+    Node* node = searchNodeByName(root, name);           // Search for the node with the given name
+    return node ? &(node->value) : nullptr;        // If node found, return a pointer to its value, otherwise return nullptr
+}
 
 
 
@@ -577,6 +598,8 @@ void RedBlackTree<Key, Value>::getAllValuesHelper(Node* currentNode, vector<Valu
         getAllValuesHelper(currentNode->right, values);             // Traverse right subtree
     }
 }
+
+
 
 
 
