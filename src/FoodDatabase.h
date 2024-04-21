@@ -4,6 +4,7 @@
 #include <map>
 #include <algorithm> // For std::sort in rankByNutrient()
 #include "RedBlackTree.h"
+#include <chrono>
 
 using namespace std;
 
@@ -43,11 +44,11 @@ public:
             exit(1);
         }
         try {
-            auto startRBT = std::chrono::high_resolution_clock::now();
+            auto startRBT = chrono::high_resolution_clock::now();
             vector<Nutrient> sortedNutrients = db.getRBT().search(id)->nutrients.sortNutrientVec();
-            auto endRBT = std::chrono::high_resolution_clock::now();
-            auto durationSRBT = std::chrono::duration_cast<std::chrono::seconds>(endRBT - startRBT);
-            auto durationMRBT = std::chrono::duration_cast<std::chrono::milliseconds>(endRBT - startRBT);
+            auto endRBT = chrono::high_resolution_clock::now();
+            auto durationSRBT = chrono::duration_cast<chrono::seconds>(endRBT - startRBT);
+            auto durationMRBT = chrono::duration_cast<chrono::milliseconds>(endRBT - startRBT);
 
             std::cout << "Time taken for RBT: " << durationSRBT.count()  << "." << durationMRBT.count() << " seconds" << std::endl;
             cout << "Name: " << db.getRBT().search(id)->name << ", Description: " << db.getRBT().search(id)->description << endl;
