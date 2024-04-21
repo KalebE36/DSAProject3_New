@@ -1,9 +1,12 @@
 #pragma once
 #include <list>
 #include <vector>
+#include <utility> // For std::pair
 #include <algorithm>
 #include <functional>
+
 using namespace std;
+
 
 //HashTable Template Class Sketch
 template <typename Key, typename Value>
@@ -13,23 +16,84 @@ public:
         Key key;                            //     Key value of the node
         Value value;                        //     Value associated with the key
         Node(Key k, Value v) : key(std::move(k)), value(std::move(v)) {}
-        //     Constructor initializes key and value using move semantics for efficiency
+        //  Constructor initializes key and value using move semantics for efficiency
     };
 
 private:
-    std::vector<std::list<Node>> table;     //     Hash table implemented as a vector of linked lists (for chaining)
-    size_t bucketCount;                     //     Number of buckets in the hash table
-    size_t elemCount = 0;                   //     Number of Elements 
-    double maxLoadFactor;                   //     Maximum load factor allowed before triggering a rehash
-    std::hash<Key> hasher;                  //     Hash function object to compute hashes of keys
+    std::vector<std::list<Node>> table;         //     Hash table implemented as a vector of linked lists (for chaining)
+    size_t bucketCount;                         //     Number of buckets in the hash table
+    size_t elemCount;                           //     Number of Elements 
+    double maxLoadFactor;                       //     Default Maximum load factor before triggering a rehash
+    std::hash<Key> hasher;                      //     Hash function object to compute hashes of keys, Default hasher for type key
+
 
 public:
-    // Constructor to initialize the hash table with a specific number of buckets and load factor
-    HashTable(size_t initBucketCount = 10, double loadFactor = 0.75)
-        : bucketCount(initBucketCount), maxLoadFactor(loadFactor), table(initBucketCount) {}
+    // Constructor
+    HashTable(size_t initBucketCount = 10000, double loadFactor = 0.75) {
+        bucketCount = initBucketCount;  // Setting the number of buckets
+        maxLoadFactor = loadFactor;     // Setting the maximum load factor
+        table.resize(bucketCount);      // Resizing the table to the number of buckets
+        elemCount = 0;                  // Initializing element count to zero
+    }
 
 
-        // Helper function to compute the bucket index for a given key
+    // Copy constructor
+    HashTable(const HashTable& other):
+        bucketCount(other.bucketCount),
+        elemCount(other.elemCount),
+        maxLoadFactor(other.maxLoadFactor),
+        table(other.bucketCount) {
+            for (size_t i = 0; i < other.bucketCount; ++i) {
+                for (const Node& node : other.table[i]) {
+                    table[i].emplace_back(node.key, node.value);
+                }
+        }
+    }
+
+
+    // Copy assignment operator
+    HashTable& operator=(const HashTable& other) {
+        if (this != &other) {
+            HashTable temp(other);  // Create a temporary copy using the copy constructor
+            swap(temp);  // Swap the current object's members with the temporary copy's members
+        }
+        return *this;
+    }
+
+
+    // Swap member function
+    void swap(HashTable& other) noexcept {
+        using std::swap;
+        swap(bucketCount, other.bucketCount);
+        swap(elemCount, other.elemCount);
+        swap(maxLoadFactor, other.maxLoadFactor);
+        swap(table, other.table);  // Efficiently swaps the contents of the table
+    }
+
+
+    // Move constructor
+    HashTable(HashTable&& other) noexcept
+        : bucketCount(std::exchange(other.bucketCount, 0)), elemCount(std::exchange(other.elemCount, 0)),
+        maxLoadFactor(std::exchange(other.maxLoadFactor, 0.75)), table(std::move(other.table)) {}
+
+    
+    // Explicit constructor using specific settings (if needed)
+    explicit HashTable(bool specializedConfiguration)
+        : bucketCount(specializedConfiguration ? 5000 : 1000),
+        maxLoadFactor(specializedConfiguration ? 0.9 : 0.75),
+        table(bucketCount), elemCount(0) {}
+
+    // Explicit constructor use example while efficiency demonstration: 
+    //  HashTable<int, FoodItem> myHashTable;  // Uses default settings
+    //  HashTable<int, FoodItem> customHashTable(500, 0.8);  // Custom settings
+    //  HashTable<int, FoodItem> largeHashTable(true);  // Uses the explicit constructor for specialized settings
+
+
+    // Default destructor is sufficient
+    ~HashTable() = default;  // Utilize the default destructor
+
+
+    // Helper function to compute the bucket index for a given key
     size_t hashKey(const Key& key) {
         return hasher(key) % bucketCount;            //     Hash the key and mod by the number of buckets
     }
@@ -63,18 +127,7 @@ public:
     }
 
 
-    ////  
-//    Value* search(const Key& key) {
-//        size_t index = hashFunction(key) % table.size();
-//        auto& list = table[index];
-//        auto itr = find_if(list.begin(), list.end(), [&key](const pair<Key, Value>& element) { return element.first == key; });
-//        if (itr != list.end()) {
-//            return &(itr->second);
-//        }
-//        return nullptr; // Not found
-//    }
-
-// Function to search for a value by its key in the hash table
+    // Function to search for a value by its key in the hash table
     Value* search(const Key& key) {
         auto& bucket = table[hashKey(key)];          //     Get the bucket by hashing the key
         for (auto& node : bucket) {                  //     Iterate through the nodes in the bucket
@@ -85,35 +138,24 @@ public:
         return nullptr;                              //     Return nullptr if key is not found
     }
 
-// Function to remove a key-value pair from the hash table
+
+    // Function to remove a key-value pair from the hash table
     bool remove(const Key& key) {
-        auto& bucket = table[hashKey(key)];          //     Get the bucket by hashing the key
-        auto it = std::find_if(bucket.begin(), bucket.end(), [&key](const Node& node) {
-            return node.key == key;                  //     Find the node with the given key
-            });
-        if (it != bucket.end()) {                    //     If the node is found
-            bucket.erase(it);                        //     Erase the node
-            return true;                             //     Return true indicating successful removal
+        size_t index = hashKey(key);  // Compute the hash index for the key
+        auto& bucket = table[index];  // Reference to the bucket
+
+        for (auto it = bucket.begin(); it != bucket.end(); ++it) {
+            if (it->key == key) {  // If the key is found
+                bucket.erase(it);  // Erase the node
+                --elemCount;       // Decrement the count of elements
+                return true;       // Return true indicating successful removal
+            }
         }
-        return false;                                //     Return false if the key was not found
+        return false;  // Return false if the key was not found
     }
 
-private:
-    // Helper function to compute the bucket index for a given key
-    size_t hashKey(const Key& key) {
-        return hasher(key) % bucketCount;            //     Hash the key and mod by the number of buckets
-    }
 
-    // Helper function to check if the current load factor exceeds the maximum allowed load factor
-    bool loadFactorExceeded() {
-        size_t totalElements = 0;
-        for (const auto& b : table) {                //     Count all elements in the table
-            totalElements += b.size();
-        }
-        return static_cast<double>(totalElements) / static_cast<double>(bucketCount) > maxLoadFactor;
-    }
-
-    // Function to resize and rehash the hash table
+    // Existing automatic rehash triggered by load factor
     void rehash() {
         bucketCount *= 2;                           //     Double the number of buckets
         std::vector<std::list<Node>> newTable(bucketCount);  // Create a new table with the increased number of buckets
@@ -123,55 +165,9 @@ private:
                 //     Move each node to the new table at the new index
             }
         }
-        table = std::move(newTable);                //     Replace the old table with the new table
+        table = std::move(newTable);                //     Replace the old table with the new table
     }
 
-    // Returns the curr LoadFactor
-    double loadFactor() const {
-        return static_cast<double>(elemCount) / static_cast<double>(bucketCount);
-    }
-
-    size_t BucketSize(size_t index) const {
-        return table[index].size();
-    }
-
-    size_t BucketCount() const {
-        return bucketCount;
-    }
-
-    public:
-    // if needed we can define a more sophisticated hash function, especially we we include the categories
-    /*
-
-    // Manually triggered rehash to a specific number of buckets
-    void rehash(size_t new_bucket_count) {
-        if (new_bucket_count > bucketCount) {  // Only rehash if the new size is larger
-            std::vector<std::list<Node>> newTable(new_bucket_count);  // Create a new table with specified number of buckets
-            for (auto& bucket : table) {  // Iterate over all buckets in the current table
-                for (auto& node : bucket) {  // Iterate over all nodes within each bucket
-                    size_t new_index = hasher(node.key) % new_bucket_count;  // Recompute the hash index based on the new bucket count
-                    newTable[new_index].emplace_back(std::move(node.key), std::move(node.value));  // Move each node to the new table at the new index
-                }
-            }
-            table = std::move(newTable);  // Replace the old table with the new table
-            bucketCount = new_bucket_count;  // Update the bucket count to the new value
-        }
-    }
-
-    // ???
-    void rehash(size_t new_buckets = 0) {
-        if (new_buckets == 0) new_buckets = bucketCount * 2;  // Default rehash: double the bucket count
-        vector<list<Node>> newTable(new_buckets);
-        for (auto& bucket : table) {
-            for (auto& node : bucket) {
-                size_t newIndex = hasher(node.key) % new_buckets;
-                newTable[newIndex].push_back(move(node));
-            }
-        }
-        table = move(newTable);
-        bucketCount = new_buckets;
-    }
-    */
 
     Value* find(const Key& key) {
         size_t index = hashKey(key);
@@ -183,31 +179,28 @@ private:
         return nullptr;
     }
 
-    bool erase(const Key& key) {
-        size_t index = hashKey(key);
-        auto& bucket = table[index];
-        auto it = bucket.begin();
-        while (it != bucket.end()) {
-            if (it->key == key) {
-                bucket.erase(it);
-                --elemCount;
-                return true;
-            }
-            ++it;
-        }
-        return false;
+
+    double loadFactor() const {
+        return static_cast<double>(elemCount) / static_cast<double>(bucketCount);
     }
+
+
+    size_t BucketSize(size_t index) const {
+        return table[index].size();
+    }
+
+
+    size_t BucketCount() const {
+        return bucketCount;
+    }
+
 
     size_t Count(const Key& key) {
         return find(key) ? 1 : 0;
     }
 
-    // Checks if the hash table is empty
-    bool empty() const {
-        return size() == 0;
-    }
 
-    // Clears all elements from the hash table
+    // Clear all elements from the hash table
     void clear() {
         for (auto& bucket : table) {
             bucket.clear();
@@ -215,7 +208,14 @@ private:
         elemCount = 0;
     }
 
-    // Returns the current number of elements in the hash table
+
+    // Check if the hash table is empty
+    bool empty() const {
+        return size() == 0;
+    }
+
+
+    // Return the current number of elements in the hash table
     size_t size() const {
         size_t size = 0;
         for (const auto& bucket : table) {
