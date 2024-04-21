@@ -121,7 +121,7 @@ public:
             vector<Nutrient> sortedNutrients1H = db.getHashTable().search(id1)->nutrients.sortNutrientVec();
             vector<Nutrient> sortedNutrients2H = db.getHashTable().search(id2)->nutrients.sortNutrientVec();
 
-            cout << "Name: " << db.getHashTable().search(id1)->name << endl;
+            cout << "Name: " << db.getHashTable().search(id1)->name << " Description: " << db.getHashTable().search(id1)->description << endl;
             // Printing each element of the sorted nutrients vector
             for (const Nutrient& nutrient : sortedNutrients1H) {
                 cout << nutrient.name << ": " << nutrient.amount << " " << nutrient.unit_name << ", ";
@@ -142,7 +142,7 @@ public:
             vector<Nutrient> sortedNutrients1 = db.getRBT().search(id1)->nutrients.sortNutrientVec();
             vector<Nutrient> sortedNutrients2 = db.getRBT().search(id2)->nutrients.sortNutrientVec();
 
-            cout << "Name: " << db.getRBT().search(id1)->name << endl;
+            cout << "Name: " << db.getRBT().search(id1)->name << " Description: " << db.getRBT().search(id1)->description << endl;
             // Printing each element of the sorted nutrients vector
             for (const Nutrient& nutrient : sortedNutrients1) {
                 cout << nutrient.name << ": " << nutrient.amount << " " << nutrient.unit_name << ", ";
