@@ -4,50 +4,6 @@
 #include <queue>
 using namespace std;
 
-//	Properties of a Red-Black Tree
-//	A Red - Black Tree is a self - balancing binary search tree with the following properties :
-//
-// 
-//	1. Root Property: The root is black.
-//  2. Node Color: Each node is either red or black.
-//  3. External property (Leaf Property) : Every leaf (Leaf is a NULL child of a node) is black.
-// 
-//  4. Internal property (Red Node Property) : The children of a red node are black. Hence possible parent of red node is a black node.
-//                        Red nodes can't have red children (no two red nodes can be adjacent).
-// 
-//  5. Black Height Property:
-//          Depth property: All the leaves have the same black depth.
-//          Path Property: Every path from root to descendant leaf node (or from a node to its descendant NIL nodes) has the same number of black nodes.
-//
-// 
-// 
-//        Key Operations:
-//        The most critical operations for maintaining the Red-Black Tree properties are
-//        ======================= insertion and deletion =======================
-//        as these can potentially violate the Red-Black properties.
-//
-// 
-//        Each of these operations has two stages:
-//        - Perform the standard BST (Binary Search Tree) insert or delete.
-//        - Fix the tree so that it maintains the Red-Black properties. This might involve a series of rotations and color changes.
-// 
-//        Insertion
-//        Insert the Node: Insert as we would in a regular BST. Nodes are inserted as red.
-//        Fix the Red-Black Tree Properties: After insertion, the tree might violate the properties of a Red-Black Tree.
-//        We will have to adjust the colors and perform rotations on certain parts of the tree to restore these properties.
-//        
-// 
-//        Rotations
-//        Rotations are used to maintain the balance of the tree:
-//
-//        Left Rotation: Pivot around the node's right child.
-//        Right Rotation: Pivot around the node's left child.
-//        Rotations help to redistribute the nodes and are key to maintaining the Red-Black Tree properties after insertion and deletion.
-//
-//        Begin by implementing the insertion and search functionalities.
-//        Ensure we can insert nodes and maintain the tree's properties.
-//        Test our tree with various inputs to ensure it self-balances as expected.
-
 
 // Red-Black Tree implementation
 template <typename Key, typename Value>
