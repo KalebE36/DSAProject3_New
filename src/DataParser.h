@@ -82,6 +82,11 @@ public:
                     RBT.search(stoi(id))->description = description;
                     RBT.search(stoi(id))->servingUnit = servSizeUnit;
                     RBT.search(stoi(id))->servingSize = servSize;
+                    hashTable.search(stoi(id))->description = description;
+                    hashTable.search(stoi(id))->servingUnit = description;
+                    hashTable.search(stoi(id))->servingSize = description;
+
+
                 }
             }
             catch (...) {

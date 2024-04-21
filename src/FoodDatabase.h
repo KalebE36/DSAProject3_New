@@ -56,7 +56,7 @@ public:
             auto durationMHash = chrono::duration_cast<chrono::milliseconds>(endHash - startHash);
 
             cout << "Time taken for hashtable: " << durationSHash.count() << "." << durationMHash.count() << " seconds" << endl;
-            cout << "Name: " << db.getHashTable().search(id)->name << db.getHashTable().search(id)->description << endl;
+            cout << "Name: " << db.getHashTable().search(id)->name << " Description: " << db.getHashTable().search(id)->description << endl;
             
             // Printing each element of the sorted nutrients vector
             for (const Nutrient& nutrient : sortedNutrientsH) {
@@ -76,7 +76,7 @@ public:
             auto durationMRBT = chrono::duration_cast<chrono::milliseconds>(endRBT - startRBT);
 
             cout << "Time taken for RBT: " << durationSRBT.count() << "." << durationMRBT.count() << " seconds" << endl;
-            cout << "Name: " << db.getRBT().search(id)->name << db.getRBT().search(id)->description << endl;
+            cout << "Name: " << db.getRBT().search(id)->name << " Description: " << db.getRBT().search(id)->description << endl;
 
             // Printing each element of the sorted nutrients vector
             for (const Nutrient& nutrient : sortedNutrients) {
@@ -113,7 +113,7 @@ public:
                 cout << nutrient.name << ": " << nutrient.amount << " " << nutrient.unit_name << ", ";
             }
             cout << endl;
-            cout << "Name: " << db.getHashTable().search(id2)->name << db.getHashTable().search(id)->description << endl;
+            cout << "Name: " << db.getHashTable().search(id2)->name << " Description: " << db.getHashTable().search(id2)->description << endl;
             // Printing each element of the sorted nutrients vector
             for (const Nutrient& nutrient : sortedNutrients2H) {
                 cout << nutrient.name << ": " << nutrient.amount << " " << nutrient.unit_name << ", ";
@@ -134,7 +134,7 @@ public:
                 cout << nutrient.name << ": " << nutrient.amount << " " << nutrient.unit_name << ", ";
             }
             cout << endl;
-            cout << "Name: " << db.getRBT().search(id2)->name << db.getRBT().search(id)->description << endl;
+            cout << "Name: " << db.getRBT().search(id2)->name << " Description: " << db.getRBT().search(id2)->description << endl;
             // Printing each element of the sorted nutrients vector
             for (const Nutrient& nutrient : sortedNutrients2) {
                 cout << nutrient.name << ": " << nutrient.amount << " " << nutrient.unit_name << ", ";
