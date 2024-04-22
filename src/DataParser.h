@@ -125,11 +125,10 @@ public:
 
             // Remove quotes if any from the fields
 
-
             int id_num;
             try {
                 id_num = stoi(id);
-                nutrientIDM[id_num] = { name, unit_name };
+                nutrientIDM[id_num] = { std::move(name), std::move(unit_name) }; 
             }
             catch (...) {
                 continue; // Skip this row if id cannot be converted to an integer
@@ -157,10 +156,11 @@ public:
             getline(ss, percDV, ',');
 
             // Remove quotes from the parsed strings
-            fdcID.erase(remove(fdcID.begin(), fdcID.end(), '"'), fdcID.end());
-            nutrientID.erase(remove(nutrientID.begin(), nutrientID.end(), '"'), nutrientID.end());
-            amount.erase(remove(amount.begin(), amount.end(), '"'), amount.end());
-            percDV.erase(remove(percDV.begin(), percDV.end(), '"'), percDV.end());
+            fdcID = fdcID.substr(1, fdcID.size() - 2);
+            nutrientID = nutrientID.substr(1, nutrientID.size() - 2);
+            amount = amount.substr(1, amount.size() - 2);
+            percDV = percDV.substr(1, percDV.size() - 2);
+
 
             try {
                 // Check if fdcID exists in the RBT
@@ -169,11 +169,9 @@ public:
                     if (percDV == "") {
                         percDV = "0.0";
                     }
-                    pair<string, string> nutrientInfo = nutrientIDM[stoi(nutrientID)];
-                    string nutrientName = nutrientInfo.first;
-                    string nutrientUnit = nutrientInfo.second;
-                    Nutrient nutrient(nutrientName, nutrientUnit, stod(amount), stoi(percDV));
-                    nutrientPF[stoi(fdcID)].push_back(nutrient);
+                    auto nutrientInfo = nutrientIDM[std::stoi(nutrientID)];
+                    Nutrient nutrient(std::move(nutrientInfo.first), std::move(nutrientInfo.second), std::stod(amount), std::stoi(percDV));
+                    nutrientPF[std::stoi(fdcID)].push_back(std::move(nutrient)); // Move semantics
                 }
             }
             catch (...) {
