@@ -10,10 +10,10 @@ II.	Project Structure and Files
 src/: Contains all source files for the application.
 db/: Directory for storing CSV datasets. (Note: Must be created manually and filled with data files from USDA FDC).
 
-         main.cpp: Entry point of the application, handling user interactions and system initialization.
-         RedBlackTree.h, HashTable.h: Templated classes that implement the custom Red Black Tree and Hash Table data structures.
-         FoodItem.h, Nutrient.h, Nutrients.h, FoodDatabase.h: Define the classes that manage the nutritional data.
-         DataParser.h: Handles parsing of CSV files and populating data structures.
+### main.cpp: Entry point of the application, handling user interactions and system initialization.
+### RedBlackTree.h, HashTable.h: Templated classes that implement the custom Red Black Tree and Hash Table data structures.
+### FoodItem.h, Nutrient.h, Nutrients.h, FoodDatabase.h: Define the classes that manage the nutritional data.
+### DataParser.h: Handles parsing of CSV files and populating data structures.
 
 
 III.	Data Retrieval
@@ -22,16 +22,77 @@ Datasets need to be manually downloaded due to their large size and stored in th
 
 IV.	Classes and Functionalities
 
-         Nutrient: Represents a single nutrient, including its name, unit, amount, and daily value.
-         
-         Nutrients: Manages a collection of Nutrient objects, providing functionality to sort and access nutrient data.
-         
-         FoodItem: Models a food item with an ID, name, description, and associated Nutrients, and other class member variables for future potential features. 
-         
-         FoodDatabase: Acts as the central database, utilizing RedBlackTree and HashTable for efficient data retrieval.
-         
-         DataParser: Responsible for parsing the CSV files and initializing the FoodDatabase with parsed data.
+Nutrient: Represents a single nutrient, including its name, unit, amount, and daily value.
 
+                  class Nutrient {
+                  public:
+                      string name;
+                      string unit_name;
+                      double amount;
+                      int dailyValue;
+                  
+                      Nutrient(const string& name, const string& unit_name, double amount, int dailyValue)
+                              : name(name), unit_name(unit_name), amount(amount), dailyValue(dailyValue) {}
+                  };
+         
+Nutrients: Manages a collection of Nutrient objects, providing functionality to sort and access nutrient data.
+
+         
+FoodItem: Models a food item with an ID, name, description, and associated Nutrients, and other class member variables for future potential features. 
+
+         class FoodItem {
+         public:
+             int id;
+             string name;
+             string description;
+             int selectedQuantity;
+             string selectedWeight;
+             string servingUnit;
+             string servingSize;
+             Nutrients nutrients; 
+         };
+
+
+FoodDatabase: Acts as the central database, utilizing RedBlackTree and HashTable for efficient data retrieval.
+
+         template<typename T>
+         class FoodDatabase {
+         private:
+             RedBlackTree<int, T> foodItems;
+             HashTable<int, T> foodItemsH;
+         
+         public:
+             T* getItemById(const string& id);
+             void SearchNutritionFactsName(FoodDatabase<FoodItem>& db);
+             void SearchNutritionFactsID(FoodDatabase<FoodItem>& db);
+             void NutritionFactsComparisonID(FoodDatabase<FoodItem>& db);
+             void displaySortedItems();
+             void setRBT(RedBlackTree<int, T>& RBT);
+             void setHashTable(HashTable<int, T>& hashTable);
+             RedBlackTree<int, T> getRBT();
+             HashTable<int, T> getHashTable();
+         };
+
+         
+DataParser: Responsible for parsing the CSV files and initializing the FoodDatabase with parsed data.
+
+         class DataParser {
+         private:
+             RedBlackTree<int, FoodItem> RBT;
+             HashTable<int, FoodItem> hashTable;
+             unordered_map<int, pair<string, string>> nutrientIDM;
+             unordered_map<int, vector<Nutrient>> nutrientPF;
+             fstream currFile;
+         
+         public:
+             void parseFoodCSV();
+             void parseBrandedFoodCSV();
+             void parseNutrientID();
+             void parseFoodNutrients();
+             void createNutrients();
+             void loadFiles(FoodDatabase<FoodItem>& db);
+         };
+         
 
 V.	Installation and Setup
 Prerequisites
