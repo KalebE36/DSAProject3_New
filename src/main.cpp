@@ -61,8 +61,9 @@ int main() {
         default:
             cout << "Thank you for using NutritiousDB. Goodbye!\n";
         }
-    } while (selection > 2);
+    } while (selection != 3);
 
+    clearScreen();
 
     return 0;
 }

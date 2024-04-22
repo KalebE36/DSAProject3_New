@@ -137,7 +137,7 @@ public:
 
         string line;
         int count = 0;
-        while (getline(currFile, line) && (count < 2500000)) {
+        while (getline(currFile, line) && (count < 5000000)) {
             stringstream ss(line);
             string rID, fdcID, nutrientID, amount, dP, derV, min, max, median, loq, footnote, minYear, percDV;
             getline(ss, rID, ','); getline(ss, fdcID, ','); getline(ss, nutrientID, ',');

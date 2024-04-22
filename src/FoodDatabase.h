@@ -100,7 +100,7 @@ public:
             auto endRBT = chrono::high_resolution_clock::now();
             auto durationSRBT = chrono::duration_cast<chrono::seconds>(endRBT - startRBT);
             auto durationMRBT = chrono::duration_cast<chrono::milliseconds>(endRBT - startRBT);
-            cout << "Time taken for RBT: " << durationSRBT.count() << "." << durationMRBT.count() << "seconds" << endl;
+            cout << "Time taken for RBT: " << durationSRBT.count() << "." << durationMRBT.count() << " seconds" << endl;
 
             cout << "Item 1: " << db.getHashTable().search(id1)->name << " Description: " << db.getHashTable().search(id1)->description << endl;
             cout << "------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
