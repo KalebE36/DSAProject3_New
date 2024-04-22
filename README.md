@@ -8,12 +8,12 @@ This console application manages a large dataset of food items and their nutriti
 
 II.	Project Structure and Files
 src/: Contains all source files for the application.
-db/: Directory for storing CSV datasets. 
-         (Note: Must be created manually and filled with data files from USDA FDC).
-main.cpp: Entry point of the application, handling user interactions and system initialization.
-RedBlackTree.h, HashTable.h: Templated classes that implement the custom Red Black Tree and Hash Table data structures.
-FoodItem.h, Nutrient.h, Nutrients.h, FoodDatabase.h: Define the classes that manage the nutritional data.
-DataParser.h: Handles parsing of CSV files and populating data structures.
+db/: Directory for storing CSV datasets. (Note: Must be created manually and filled with data files from USDA FDC).
+
+         main.cpp: Entry point of the application, handling user interactions and system initialization.
+         RedBlackTree.h, HashTable.h: Templated classes that implement the custom Red Black Tree and Hash Table data structures.
+         FoodItem.h, Nutrient.h, Nutrients.h, FoodDatabase.h: Define the classes that manage the nutritional data.
+         DataParser.h: Handles parsing of CSV files and populating data structures.
 
 
 III.	Data Retrieval
@@ -21,11 +21,16 @@ Datasets need to be manually downloaded due to their large size and stored in th
 
 
 IV.	Classes and Functionalities
-Nutrient: Represents a single nutrient, including its name, unit, amount, and daily value.
-Nutrients: Manages a collection of Nutrient objects, providing functionality to sort and access nutrient data.
-FoodItem: Models a food item with an ID, name, description, and associated Nutrients, and other class member variables for future potential features. 
-FoodDatabase: Acts as the central database, utilizing RedBlackTree and HashTable for efficient data retrieval.
-DataParser: Responsible for parsing the CSV files and initializing the FoodDatabase with parsed data.
+
+         Nutrient: Represents a single nutrient, including its name, unit, amount, and daily value.
+         
+         Nutrients: Manages a collection of Nutrient objects, providing functionality to sort and access nutrient data.
+         
+         FoodItem: Models a food item with an ID, name, description, and associated Nutrients, and other class member variables for future potential features. 
+         
+         FoodDatabase: Acts as the central database, utilizing RedBlackTree and HashTable for efficient data retrieval.
+         
+         DataParser: Responsible for parsing the CSV files and initializing the FoodDatabase with parsed data.
 
 
 V.	Installation and Setup
