@@ -34,12 +34,11 @@ public:
         while (getline(currFile, line) && (count < 200001)) {
             std::stringstream ss(line);
             std::string id, data_type, name, food_cat_id, publ_date, market, trade, mic_dat;
-            getline(ss, id, ','); getline(ss, data_type, ','); getline(ss, name, ','); getline(ss, food_cat_id, ','); getline(ss, publ_date, ',');
-            getline(ss, market, ','); getline(ss, trade, ','); getline(ss, mic_dat, ',');
+            getline(ss, id, '"'); getline(ss, id, '"'); getline(ss, data_type, '"'); getline(ss, data_type, '"'); getline(ss, name, '"'); getline(ss, name, '"'); 
 
             // Remove quotes from fields
-            id = id.substr(1, id.size() - 2);
-            name = name.substr(1, name.size() - 2);
+            id.erase(remove(id.begin(), id.end(), '"'), id.end());
+            name.erase(remove(name.begin(), name.end(), '"'), name.end());
 
             if (count > 0) {
                 FoodItem item;
@@ -68,11 +67,7 @@ public:
             getline(ss, id, '"'); getline(ss, id, '"'); getline(ss, branOwner, '"'); getline(ss, branOwner, '"'); getline(ss, branName, '"');
             getline(ss, branName, '"'); getline(ss, subBrand, '"'); getline(ss, subBrand, '"'); getline(ss, gtin, '"'); getline(ss, gtin, '"');
             getline(ss, description, '"'); getline(ss, description, '"'); getline(ss, notS, '"'); getline(ss, notS, '"'); getline(ss, servSize, '"'); getline(ss, servSize, '"');
-            getline(ss, servSizeUnit, '"'); getline(ss, servSizeUnit, '"'); getline(ss, hhServing, '"'); getline(ss, hhServing, '"'); getline(ss, bfoodCat, '"');
-            getline(ss, bfoodCat, '"'); getline(ss, source, '"'); getline(ss, source, '"'); getline(ss, packageWeight, '"'); getline(ss, packageWeight, '"');
-            getline(ss, mD, '"'); getline(ss, mD, '"'); getline(ss, aD, '"'); getline(ss, aD, '"'); getline(ss, market, '"');
-            getline(ss, market, '"'); getline(ss, dD, '"'); getline(ss, dD, '"'); getline(ss, pSC, '"'); getline(ss, pSC, '"');
-            getline(ss, tC, '"'); getline(ss, tC, '"'); getline(ss, sD, '"'); getline(ss, sD, '"');
+            getline(ss, servSizeUnit, '"'); getline(ss, servSizeUnit, '"');
 
             //description.erase(remove(description.begin(), description.end(), '"'), description.end());
             id.erase(remove(id.begin(), id.end(), '"'), id.end());
@@ -118,10 +113,6 @@ public:
             getline(ss, name, '"');
             getline(ss, unit_name, '"');
             getline(ss, unit_name, '"');
-            getline(ss, nutrient_nbr_str, '"');
-            getline(ss, nutrient_nbr_str, '"');
-            getline(ss, rank_str, '"');
-            getline(ss, rank_str, '"');
 
             // Remove quotes if any from the fields
 
