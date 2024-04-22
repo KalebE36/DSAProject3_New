@@ -1,26 +1,26 @@
 # DSAProject3_New
-NutriCrunchTeam 
-NutritiousDB -	Food Nutritional Database
+### NutriCrunchTeam 
+### NutritiousDB - Food Nutritional Database
 
-I.	Overview
+### I.	Overview
 This console application manages a large dataset of food items and their nutritional information, sourced from the USDA FoodData Central. It utilizes a Red Black Tree and a Hash Table for efficient retrieval and manipulation of food data, demonstrating the performance of these custom data structures.
 
 
-II.	Project Structure and Files
+### II.	Project Structure and Files
 src/: Contains all source files for the application.
 db/: Directory for storing CSV datasets. (Note: Must be created manually and filled with data files from USDA FDC).
 
-### main.cpp: Entry point of the application, handling user interactions and system initialization.
-### RedBlackTree.h, HashTable.h: Templated classes that implement the custom Red Black Tree and Hash Table data structures.
-### FoodItem.h, Nutrient.h, Nutrients.h, FoodDatabase.h: Define the classes that manage the nutritional data.
-### DataParser.h: Handles parsing of CSV files and populating data structures.
+main.cpp: Entry point of the application, handling user interactions and system initialization.
+RedBlackTree.h, HashTable.h: Templated classes that implement the custom Red Black Tree and Hash Table data structures.
+FoodItem.h, Nutrient.h, Nutrients.h, FoodDatabase.h: Define the classes that manage the nutritional data.
+DataParser.h: Handles parsing of CSV files and populating data structures.
 
 
-III.	Data Retrieval
+### III.	Data Retrieval
 Datasets need to be manually downloaded due to their large size and stored in the db/ directory under the project root. These CSV files can be downloaded from the USDA FoodData Central.
 
 
-IV.	Classes and Functionalities
+### IV.	Classes and Functionalities
 
 Nutrient: Represents a single nutrient, including its name, unit, amount, and daily value.
         
@@ -91,7 +91,7 @@ DataParser: Responsible for parsing the CSV files and initializing the FoodDatab
          };
          
 
-V.	Installation and Setup
+### V.	Installation and Setup
 Prerequisites
 A C++ development environment such as Visual Studio or GCC.
  
