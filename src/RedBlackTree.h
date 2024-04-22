@@ -59,7 +59,9 @@ public:
     void postOrderTraversal() const;
     void levelOrderTraversal() const;
     vector<Value> getAllValues() const;
-    Value* searchByName(const std::string& name) const; // Method to retrieve all values from the tree in sorted order
+    Node* searchNodeByName(Node* current, const string& name) const;
+    Value* searchByName(const string& name) const;
+
 
 
 private:
@@ -78,13 +80,11 @@ private:
     void postOrderHelper(Node* node) const;
     void levelOrderHelper(Node* node) const;
     void getAllValuesHelper(Node* node, vector<Value>& values) const;
-    Node* searchNodeByName(Node* current, const std::string& name) const;
 
 };
 
 template <typename Key, typename Value>
-typename RedBlackTree<Key, Value>::Node* RedBlackTree<Key, Value>::searchNodeByName(Node* current, const std::string& name) const {
-    cout << "HI" << endl;
+typename RedBlackTree<Key, Value>::Node* RedBlackTree<Key, Value>::searchNodeByName(Node* current, const string& name) const {
     if (current == nullptr || current->value.name == name) {
         return current;
     }
@@ -96,9 +96,9 @@ typename RedBlackTree<Key, Value>::Node* RedBlackTree<Key, Value>::searchNodeByN
 }
 
 template <typename Key, typename Value>
-Value* RedBlackTree<Key, Value>::searchByName(const std::string& name) const {
-    Node* node = searchNodeByName(root, name);           // Search for the node with the given name
-    return node ? &(node->value) : nullptr;        // If node found, return a pointer to its value, otherwise return nullptr
+Value* RedBlackTree<Key, Value>::searchByName(const string& name) const {
+    Node* node = searchNodeByName(root, name); // Search for the node with the given name
+    return node ? &(node->value) : nullptr; // If node found, return a pointer to its value, otherwise return nullptr
 }
 
 

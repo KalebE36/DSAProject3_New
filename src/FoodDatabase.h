@@ -24,30 +24,6 @@ public:
         return foodItems.search(id);  // make sure search returns a pointer to T
     }
 
-    // Get items by description using the map
-
-    void SearchNutritionFactsName(FoodDatabase<FoodItem>& db) {
-        string input;
-        cout << "Enter Name of Item: ";
-        cin >> input;
-
-        try {
-            auto startRBT = chrono::high_resolution_clock::now();
-            vector<Nutrient> sortedNutrients = db.getRBT().searchByName(input)->nutrients.sortNutrientVec();
-            auto endRBT = chrono::high_resolution_clock::now();
-            auto durationSRBT = chrono::duration_cast<chrono::seconds>(endRBT - startRBT);
-            auto durationMRBT = chrono::duration_cast<chrono::milliseconds>(endRBT - startRBT);
-
-            cout << "Time taken for RBT: " << durationSRBT.count() << "." << durationMRBT.count() << " seconds" << endl;
-            for (const Nutrient& nutrient : sortedNutrients) {
-                cout << nutrient.name << ": " << nutrient.amount << " " << nutrient.unit_name << ", ";
-            }
-        } catch (...) {
-            cout << "Item does not exist" << endl;
-        }
-
-    }
-
 
     void SearchNutritionFactsID(FoodDatabase<FoodItem>& db) {
         int id;
@@ -69,36 +45,26 @@ public:
             auto durationSHash = chrono::duration_cast<chrono::seconds>(endHash - startHash);
             auto durationMHash = chrono::duration_cast<chrono::milliseconds>(endHash - startHash);
 
-            cout << "Time taken for hashtable: " << durationSHash.count() << "." << durationMHash.count() << " seconds" << endl;
-            cout << "Name: " << db.getHashTable().search(id)->name << " Description: " << db.getHashTable().search(id)->description << endl;
-            
-            // Printing each element of the sorted nutrients vector
-            for (const Nutrient& nutrient : sortedNutrientsH) {
-                cout << nutrient.name << ": " << nutrient.amount << " " << nutrient.unit_name << ", ";
-            }
-            cout << endl;
-        }
-        catch (...) {
-            // If not found in hashtable, try searching in the Red-Black Tree
-            cout << "Item Does Not Exist" << endl;
-        }
-        try {
             auto startRBT = chrono::high_resolution_clock::now();
             vector<Nutrient> sortedNutrients = db.getRBT().search(id)->nutrients.sortNutrientVec();
             auto endRBT = chrono::high_resolution_clock::now();
             auto durationSRBT = chrono::duration_cast<chrono::seconds>(endRBT - startRBT);
             auto durationMRBT = chrono::duration_cast<chrono::milliseconds>(endRBT - startRBT);
 
+            cout << "Time taken for hashtable: " << durationSHash.count() << "." << durationMHash.count() << " seconds" << endl;
             cout << "Time taken for RBT: " << durationSRBT.count() << "." << durationMRBT.count() << " seconds" << endl;
-            cout << "Name: " << db.getRBT().search(id)->name << " Description: " << db.getRBT().search(id)->description << endl;
 
+            cout << "Name: " << db.getRBT().search(id)->name << " Description: " << db.getRBT().search(id)->description << endl;
+            cout << "------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
             // Printing each element of the sorted nutrients vector
             for (const Nutrient& nutrient : sortedNutrients) {
-                cout << nutrient.name << ": " << nutrient.amount << " " << nutrient.unit_name << ", ";
+                cout << nutrient.name << ": " << nutrient.amount << " " << nutrient.unit_name << endl;
             }
+            cout << "------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
             cout << endl;
         }
         catch (...) {
+            // If not found in hashtable, try searching in the Red-Black Tree
             cout << "Item Does Not Exist" << endl;
         }
     }
@@ -118,42 +84,39 @@ public:
             exit(1);
         }
         try {
+            cout << "------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
+            auto startHash = chrono::high_resolution_clock::now();
             vector<Nutrient> sortedNutrients1H = db.getHashTable().search(id1)->nutrients.sortNutrientVec();
             vector<Nutrient> sortedNutrients2H = db.getHashTable().search(id2)->nutrients.sortNutrientVec();
+            auto endHash = chrono::high_resolution_clock::now();
+            auto durationSHash = chrono::duration_cast<chrono::seconds>(endHash - startHash);
+            auto durationMHash = chrono::duration_cast<chrono::milliseconds>(endHash - startHash);
+            cout << "Time taken for hashtable: " << durationSHash.count() << "." << durationMHash.count() << " seconds" << endl;
 
-            cout << "Name: " << db.getHashTable().search(id1)->name << " Description: " << db.getHashTable().search(id1)->description << endl;
-            // Printing each element of the sorted nutrients vector
-            for (const Nutrient& nutrient : sortedNutrients1H) {
-                cout << nutrient.name << ": " << nutrient.amount << " " << nutrient.unit_name << ", ";
-            }
-            cout << endl;
-            cout << "Name: " << db.getHashTable().search(id2)->name << " Description: " << db.getHashTable().search(id2)->description << endl;
-            // Printing each element of the sorted nutrients vector
-            for (const Nutrient& nutrient : sortedNutrients2H) {
-                cout << nutrient.name << ": " << nutrient.amount << " " << nutrient.unit_name << ", ";
-            }
-            cout << endl;
-        }
-        catch (...) {
-            cout << "Item Does Not Exist" << endl;
-        }
 
-        try {
+            auto startRBT = chrono::high_resolution_clock::now();
             vector<Nutrient> sortedNutrients1 = db.getRBT().search(id1)->nutrients.sortNutrientVec();
             vector<Nutrient> sortedNutrients2 = db.getRBT().search(id2)->nutrients.sortNutrientVec();
+            auto endRBT = chrono::high_resolution_clock::now();
+            auto durationSRBT = chrono::duration_cast<chrono::seconds>(endRBT - startRBT);
+            auto durationMRBT = chrono::duration_cast<chrono::milliseconds>(endRBT - startRBT);
+            cout << "Time taken for RBT: " << durationSRBT.count() << "." << durationMRBT.count() << "seconds" << endl;
 
-            cout << "Name: " << db.getRBT().search(id1)->name << " Description: " << db.getRBT().search(id1)->description << endl;
+            cout << "Item 1: " << db.getHashTable().search(id1)->name << " Description: " << db.getHashTable().search(id1)->description << endl;
+            cout << "------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
             // Printing each element of the sorted nutrients vector
-            for (const Nutrient& nutrient : sortedNutrients1) {
-                cout << nutrient.name << ": " << nutrient.amount << " " << nutrient.unit_name << ", ";
+            for (const Nutrient& nutrient : sortedNutrients1H) {
+                cout << nutrient.name << ": " << nutrient.amount << " " << nutrient.unit_name << endl;
             }
-            cout << endl;
-            cout << "Name: " << db.getRBT().search(id2)->name << " Description: " << db.getRBT().search(id2)->description << endl;
+
+            cout << "------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
+            cout << "Item 2: " << db.getHashTable().search(id2)->name << " Description: " << db.getHashTable().search(id2)->description << endl;
+            cout << "------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
             // Printing each element of the sorted nutrients vector
-            for (const Nutrient& nutrient : sortedNutrients2) {
-                cout << nutrient.name << ": " << nutrient.amount << " " << nutrient.unit_name << ", ";
+            for (const Nutrient& nutrient : sortedNutrients2H) {
+                cout << nutrient.name << ": " << nutrient.amount << " " << nutrient.unit_name << endl;
             }
-            cout << endl;
+
         }
         catch (...) {
             cout << "Item Does Not Exist" << endl;

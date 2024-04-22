@@ -12,11 +12,8 @@ void DisplayMainMenu() {
     cout << "Welcome to NutritiousDB - Your Personal Nutrition Guide\n";
     cout << "Please select an option:\n";
     cout << "1. Search Nutrition Facts\n";
-    cout << "2. Search NF Name\n";
-    cout << "3. Nutrient Ranking Tool\n";
-    //cout << "4. Optional-Potential Feature: Ratio Analysis Tool\n";
-    //cout << "5. Optional-Potential Feature: Complete X+Y+Z Nutrient Calculator - Recipe \n";
-    cout << "4. Exit\n";
+    cout << "2. Compare Nutrition Facts\n";
+    cout << "3. Exit\n";
 }
 
 
@@ -34,12 +31,20 @@ void clearScreen() {
 
 
 int main() {
+    auto startTimer = chrono::high_resolution_clock::now();
     FoodDatabase<FoodItem> db;
     DataParser parser;
     cout << "Loading..." << endl;
     parser.loadFiles(db);
     // Populate FoodItems from food.csv
     clearScreen();
+    auto endTimer = chrono::high_resolution_clock::now();
+    auto durationMTIMER = chrono::duration_cast<chrono::minutes>(endTimer - startTimer);
+    auto durationSTIMER = chrono::duration_cast<chrono::seconds >(endTimer - startTimer);
+
+
+
+    cout << "Loading time: " << durationMTIMER.count() << "." << durationSTIMER.count() <<  " Minutes" << endl;
     int selection = 0;
 
     do {
@@ -51,21 +56,12 @@ int main() {
             db.SearchNutritionFactsID(db);
             break;
         case 2:
-            db.SearchNutritionFactsName(db);
-            break;
-        case 3:
             db.NutritionFactsComparisonID(db);
             break;
-        case 4:
-            //RecipeNutritionFacts();
-            break;
-        case 5:
-            cout << "Thank you for using NutritiousDB. Goodbye!\n";
-            break;
         default:
-            cout << "Invalid option. Please try again.\n";
+            cout << "Thank you for using NutritiousDB. Goodbye!\n";
         }
-    } while (selection != 6);
+    } while (selection > 2);
 
 
     return 0;

@@ -45,24 +45,57 @@ public:
 
 
     std::vector<Nutrient> sortNutrientVec() {
-        sortedNutrient.push_back(calories);
-        sortedNutrient.push_back(totalFat);
-        sortedNutrient.push_back(saturatedFat);
-        sortedNutrient.push_back(transFat);
-        sortedNutrient.push_back(cholesterol);
-        sortedNutrient.push_back(sodium);
-        sortedNutrient.push_back(totalCarbohydrates);
-        sortedNutrient.push_back(fiber);
-        sortedNutrient.push_back(sugar);
-        sortedNutrient.push_back(addedSugar);
-        sortedNutrient.push_back(protein);
-        sortedNutrient.push_back(vitaminC);
-        sortedNutrient.push_back(vitaminD);
-        sortedNutrient.push_back(iron);
-        sortedNutrient.push_back(calcium);
-        sortedNutrient.push_back(potassium);
-        sortedNutrient.push_back(phosphorus);
-
+        if (calories.amount != 0) {
+            sortedNutrient.push_back(calories);
+        }
+        if (totalFat.amount != 0) {
+            sortedNutrient.push_back(totalFat);
+        }
+        if (saturatedFat.amount != 0) {
+            sortedNutrient.push_back(saturatedFat);
+        }
+        if (transFat.amount != 0) {
+            sortedNutrient.push_back(transFat);
+        }
+        if (cholesterol.amount != 0) {
+            sortedNutrient.push_back(cholesterol);
+        }
+        if (sodium.amount != 0) {
+            sortedNutrient.push_back(sodium);
+        }
+        if (totalCarbohydrates.amount != 0) {
+            sortedNutrient.push_back(totalCarbohydrates);
+        }
+        if (fiber.amount != 0) {
+            sortedNutrient.push_back(fiber);
+        }
+        if (sugar.amount != 0) {
+            sortedNutrient.push_back(sugar);
+        }
+        if (addedSugar.amount != 0) {
+            sortedNutrient.push_back(addedSugar);
+        }
+        if (protein.amount != 0) {
+            sortedNutrient.push_back(protein);
+        }
+        if (vitaminC.amount != 0) {
+            sortedNutrient.push_back(vitaminC);
+        }
+        if (vitaminD.amount != 0) {
+            sortedNutrient.push_back(vitaminD);
+        }
+        if (iron.amount != 0) {
+            sortedNutrient.push_back(iron);
+        }
+        if (calcium.amount != 0) {
+            sortedNutrient.push_back(calcium);
+        }
+        if (potassium.amount != 0) {
+            sortedNutrient.push_back(potassium);
+        }
+        if (phosphorus.amount != 0) {
+            sortedNutrient.push_back(phosphorus);
+        }
 
         sort(sortedNutrient.begin(), sortedNutrient.end(), [](const Nutrient& a, const Nutrient& b) {
             return a.amount > b.amount; // Assuming Nutrient class has an amount member variable
