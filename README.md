@@ -23,17 +23,14 @@ Datasets need to be manually downloaded due to their large size and stored in th
 IV.	Classes and Functionalities
 
 Nutrient: Represents a single nutrient, including its name, unit, amount, and daily value.
-
-                  class Nutrient {
-                  public:
-                      string name;
-                      string unit_name;
-                      double amount;
-                      int dailyValue;
-                  
-                      Nutrient(const string& name, const string& unit_name, double amount, int dailyValue)
-                              : name(name), unit_name(unit_name), amount(amount), dailyValue(dailyValue) {}
-                  };
+        
+          class Nutrient {
+          public:
+              string name;
+              string unit_name;
+              double amount;
+              int dailyValue;
+          };
          
 Nutrients: Manages a collection of Nutrient objects, providing functionality to sort and access nutrient data.
 
